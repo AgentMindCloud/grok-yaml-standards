@@ -1,10 +1,12 @@
 # grok-yaml-standards
 
-**The Central Community Hub for Grok YAML Magic on X**
+**The official community reference library extending grok-install.yaml with 8 new magic YAML standards for Grok on X. Instant agents, workflows, prompts, security & more — all via simple YAML + @grok triggers.**
 
 [![GitHub stars](https://img.shields.io/github/stars/xai-community/grok-yaml-standards)](https://github.com/xai-community/grok-yaml-standards)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](standards-overview.md)
+
+**The Central Community Hub for Grok YAML Magic on X**
 
 **Extending the official `grok-install.yaml` standard with 8 new magic YAML files** — the definitive open reference library so that **X users, developers, and xAI** can all benefit from frictionless Grok-powered features via simple YAML files in any repo.
 
@@ -47,3 +49,11 @@ No installation. No API keys. Pure YAML magic.
 git clone https://github.com/xai-community/grok-yaml-standards.git
 cd grok-yaml-standards
 # Explore subfolders → copy any example.yaml → start using today
+
+Roadmap & xAI Adoption
+See ROADMAP.md and how-xai-can-adopt.md.
+Contributing
+Love Grok? See CONTRIBUTING.md — every PR makes the standard stronger.
+Made with ❤️ by the Grok community for xAI and every X user.
+
+Forward-compatible with grok-install.yaml v1.0+ • Version 1.0.0 of the standards
