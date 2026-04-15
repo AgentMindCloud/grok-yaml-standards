@@ -15,6 +15,6 @@
 **All files** follow the same modern YAML structure:
 ```yaml
 version: "1.0.0"
-author: "@yourhandle"
+author: "@Jan_Sol0s (Jani Starck)"
 compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+"]
 ...
