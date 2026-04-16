@@ -25,9 +25,9 @@
 This is the **single source of truth** for the future of Grok-on-X.
 
 ### How to Use Today (Zero Setup)
-1. Pick any subfolder (e.g. `grok-agent/`)
-2. Copy its `example.yaml` into your repo (recommended location: `.grok/grok-agent.yaml`)
-3. Add a magic trigger comment in any issue, PR, or README
+1. Pick any subfolder (e.g. `grok-agent/`)  
+2. Copy its `example.yaml` into your repo (recommended location: `.grok/grok-xxx.yaml`)  
+3. Add a magic trigger comment in any issue, PR, or README  
 4. Tag `@grok` — Grok instantly activates the feature (once xAI adopts the standard)
 
 No installation. No API keys. Pure YAML magic.
