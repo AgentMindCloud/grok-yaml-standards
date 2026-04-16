@@ -1,0 +1,12 @@
+# .grok/grok-config.yaml
+version: "1.1.0"
+author: "@JanSol0s"
+compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+", "grok-yaml-standards@1.1+"]
+grok:
+  default_model: "grok-4"
+  temperature: 0.7
+  personality: "helpful-maximalist"
+context:
+  audience: "X power users & developers"
+privacy:
+  allow_telemetry: true
