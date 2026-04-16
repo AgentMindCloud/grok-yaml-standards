@@ -1,0 +1,9 @@
+# .grok/grok-workflow.yaml
+version: "1.1.0"
+author: "@JanSol0s"
+compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+", "grok-yaml-standards@1.1+"]
+workflows:
+  ReleasePipeline:
+    steps:
+      - name: "Test"
+        action: "grok-test"
