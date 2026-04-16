@@ -1,16 +1,24 @@
 # .grok/grok-prompts.yaml
-version: "1.0.0"
+version: "1.1.0"
 author: "@JanSol0s"
 compatibility:
   - "grok-install.yaml@1.0+"
   - "grok@2026.4+"
+  - "grok-yaml-standards@1.1+"
 
-prompts:
-  marketing_post:
-    template: "Write a viral X thread about {topic} in the style of {style}"
-    variables: ["topic", "style"]
-    temperature: 0.9
+prompt_library:
+  viral_thread:
+    template: "Write a high-engagement X thread about {topic}. Use hook → story → value → CTA. Maximum 8 tweets. Tone: {tone}."
+    variables: ["topic", "tone"]
+    temperature: 0.85
+    max_tokens: 1200
+
   code_review:
-    template: "Review this code for bugs, style, and performance:\n{code}"
-    variables: ["code"]
+    template: "Perform a senior-level code review on this {language} code:\n{code}\nFocus on: bugs, performance, security, readability."
+    variables: ["language", "code"]
     temperature: 0.3
+
+  product_idea:
+    template: "Generate 5 innovative product ideas for {industry} that would go viral on X. For each idea give name, one-sentence description, and why it would spread."
+    variables: ["industry"]
+    temperature: 0.9
