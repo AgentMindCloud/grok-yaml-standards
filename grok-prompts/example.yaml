@@ -1,0 +1,16 @@
+# .grok/grok-prompts.yaml
+version: "1.0.0"
+author: "@JanSol0s"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+
+prompts:
+  marketing_post:
+    template: "Write a viral X thread about {topic} in the style of {style}"
+    variables: ["topic", "style"]
+    temperature: 0.9
+  code_review:
+    template: "Review this code for bugs, style, and performance:\n{code}"
+    variables: ["code"]
+    temperature: 0.3
