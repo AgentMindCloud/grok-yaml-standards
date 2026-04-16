@@ -1,0 +1,11 @@
+# .grok/grok-test.yaml
+version: "1.0.0"
+author: "@JanSol0s"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+
+tests:
+  - name: "Code Quality"
+    prompt: "Check this code for bugs and style issues"
+    files: ["**/*.py"]
