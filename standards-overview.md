@@ -18,3 +18,11 @@ version: "1.0.0"
 author: "@yourhandle"
 compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+"]
 ...
+### JSON Schema Validation (New in v1.2.0)
+All 8 magic files now have official JSON Schemas in the `/schemas/` folder.  
+This enables automatic validation in GitHub, VS Code, and any modern editor.
+
+**Benefits:**
+- Real-time error checking
+- Auto-complete for contributors
+- Future-proof for xAI native support
