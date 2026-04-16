@@ -1,0 +1,14 @@
+# .grok/grok-docs.yaml
+version: "1.0.0"
+author: "@JanSol0s"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+
+docs:
+  target: "README.md"
+  sections:
+    - overview
+    - installation
+    - usage
+  style: "professional"
