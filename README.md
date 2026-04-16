@@ -54,3 +54,32 @@ cd grok-yaml-standards
 # Drop the ready .grok/ folder into your own repos and start using today!
 
 Made with ❤️ by the Grok community for xAI and every X user.
+
+Version 1.2.0 • Forward-compatible with grok-install.yaml v1.0+ • Launched on X April 16, 2026
+text---
+
+**LAUNCH.md** (new root-level file — copy-paste as is)
+
+```markdown
+# LAUNCH.md
+
+## Official Launch — April 16, 2026
+
+**grok-yaml-standards v1.1.1 → v1.2.0** is now live on X!
+
+**Full launch thread by @JanSol0s**  
+https://x.com/JanSol0s/status/2044691252327993364
+
+**@grok’s official reply**  
+> “This is epic community work! YAML standards for Grok… Let’s build this future together. 🚀”
+
+**Launch image**  
+![grok-yaml-standards Launch](https://pbs.twimg.com/media/HGAz2HFbwAAPYaX.jpg)
+
+**What this means**  
+Every GitHub repo can now become a Grok-powered superpower with one `@grok` comment.
+
+**Next**  
+We’re already on v1.2.0 — JSON Schema validation files, issue templates, and more coming fast.
+
+Star ⭐ Fork 🍴 Use it today!<img width="1168" height="784" alt="grok-yaml-standards" src="https://github.com/user-attachments/assets/e14485a3-8206-4f30-b7b3-140690c2f6b4" />
