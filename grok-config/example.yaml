@@ -1,0 +1,26 @@
+# .grok/grok-config.yaml
+version: "1.0.0"
+author: "@JanSol0s"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+
+# Global Grok behavior overrides for this repository
+grok:
+  temperature: 0.7
+  max_tokens: 8192
+  response_language: "en"
+  personality: "helpful-maximalist"
+  default_model: "grok-4"
+
+# Custom context that Grok always loads
+context:
+  company: "Your Startup"
+  project: "AI Productivity Suite"
+  audience: "X power users & developers"
+
+# Privacy & data preferences
+privacy:
+  allow_telemetry: true
+  share_anonymous_usage: true
+  never_share: ["secrets", "api_keys"]
