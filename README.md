@@ -2,9 +2,10 @@
 
 **The official community reference library extending grok-install.yaml with 8 new magic YAML standards for Grok on X. Instant agents, workflows, prompts, security & more — all via simple YAML + @grok triggers.**
 
-[![GitHub stars](https://img.shields.io/github/stars/xai-community/grok-yaml-standards)](https://github.com/xai-community/grok-yaml-standards)  
+[![GitHub stars](https://img.shields.io/github/stars/agentmindcloud/grok-yaml-standards)](https://github.com/agentmindcloud/grok-yaml-standards)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](standards-overview.md)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](standards-overview.md)  
+[![Launched on X](https://img.shields.io/badge/Launched%20on%20X-000000?logo=x)](https://x.com/JanSol0s/status/2044691252327993364)
 
 **The Central Community Hub for Grok YAML Magic on X**
 
@@ -15,7 +16,7 @@
 ### Why This Repo Exists
 `grok-install.yaml` showed the world how a single YAML file can turn any GitHub repo into a Grok-native experience.  
 
-**grok-yaml-standards v1.1.1** now ships **rich, production-ready templates** in every folder + a ready-to-drop `.grok/` sample folder so you can start using real agents, workflows, prompts, and security scans immediately.
+**grok-yaml-standards v1.2.0** now ships **rich production-ready templates**, a ready-to-drop `.grok/` folder, **GitHub release automation**, and **official launch on X** (with @grok’s own positive reply!).
 
 - **X users** → copy-paste YAML → instant custom Grok superpowers  
 - **Developers & companies** → standardized, versioned, secure Grok integrations  
@@ -25,14 +26,14 @@
 1. Copy any file from the ready `.grok/` sample folder  
 2. Place it in your repo at `.grok/grok-xxx.yaml`  
 3. Add a magic trigger comment in any issue, PR, or README  
-4. Tag `@grok` — Grok instantly activates the feature (once xAI adopts the standard)
+4. Tag `@grok` — Grok instantly activates the feature
 
-### New in v1.1.1
-- Version bump + final polish for launch  
-- Rich multi-template `example.yaml` files with real-world prompts, agents, workflows, etc.  
-- Ready-to-drop `.grok/` sample folder (8 files)  
-- GitHub Release workflow included  
-- Full forward-compatibility with `grok-install.yaml@1.0+`
+### New in v1.2.0
+- Official X launch + @grok endorsement  
+- Launch badge + permanent thread link in README  
+- New `LAUNCH.md` with full thread & image  
+- GitHub release workflow + auto-tagging  
+- Starting JSON Schema files for validation (coming next)
 
 ### Future Magic Triggers (Table)
 | YAML File            | Primary Trigger Example                  | What It Unlocks                              | Benefit |
@@ -48,7 +49,7 @@
 
 ### Quick Start
 ```bash
-git clone https://github.com/xai-community/grok-yaml-standards.git
+git clone https://github.com/agentmindcloud/grok-yaml-standards.git
 cd grok-yaml-standards
 # Drop the ready .grok/ folder into your own repos and start using today!
 
