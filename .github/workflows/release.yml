@@ -1,0 +1,42 @@
+# .github/workflows/release.yml
+# Auto-builds and publishes a new release when you push a tag (v1.x.x)
+# Perfect for this community-driven standards repo
+
+name: Release v1.x.x
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Grok YAML Standards ${{ github.ref_name }}
+          body: |
+            ## What's New in ${{ github.ref_name }}
+            - Rich production-ready templates in every magic file
+            - Ready-to-drop `.grok/` sample folder
+            - Full forward-compatibility with `grok-install.yaml`
+            - Community-contributed improvements
+
+            **Made with ❤️ by the Grok community for xAI and every X user.**
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
+      - name: Notify X (optional future hook)
+        run: echo "Repo released! Ready for @grok magic ✨"
