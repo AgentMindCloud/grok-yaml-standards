@@ -1,14 +1,25 @@
 # .grok/grok-docs.yaml
-version: "1.0.0"
+version: "1.1.0"
 author: "@JanSol0s"
 compatibility:
   - "grok-install.yaml@1.0+"
   - "grok@2026.4+"
+  - "grok-yaml-standards@1.1+"
 
 docs:
-  target: "README.md"
-  sections:
-    - overview
-    - installation
-    - usage
-  style: "professional"
+  AutoREADME:
+    target: "README.md"
+    sections:
+      - hero
+      - features
+      - installation
+      - quickstart
+      - magic_triggers
+    style: "exciting-professional"
+    update_on: ["push", "pr_merged"]
+
+  APIDocs:
+    target: "docs/API.md"
+    sections: ["endpoints", "examples", "auth"]
+    style: "technical-clean"
+    include_code_samples: true
