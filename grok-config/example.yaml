@@ -1,26 +1,35 @@
 # .grok/grok-config.yaml
-version: "1.0.0"
+version: "1.1.0"
 author: "@JanSol0s"
 compatibility:
   - "grok-install.yaml@1.0+"
   - "grok@2026.4+"
+  - "grok-yaml-standards@1.1+"
 
-# Global Grok behavior overrides for this repository
+# === GLOBAL GROK BEHAVIOR ===
 grok:
+  default_model: "grok-4"
   temperature: 0.7
-  max_tokens: 8192
+  max_tokens: 16384
   response_language: "en"
   personality: "helpful-maximalist"
-  default_model: "grok-4"
+  reasoning_depth: "high"
 
-# Custom context that Grok always loads
+# === ALWAYS-INJECTED CONTEXT ===
 context:
-  company: "Your Startup"
-  project: "AI Productivity Suite"
+  company: "Your Project Name"
   audience: "X power users & developers"
+  tone: "clear, witty, actionable"
+  key_constraints: ["no hallucinations", "cite sources when possible"]
 
-# Privacy & data preferences
+# === PRIVACY & DATA CONTROLS ===
 privacy:
   allow_telemetry: true
   share_anonymous_usage: true
-  never_share: ["secrets", "api_keys"]
+  never_share: ["api_keys", "secrets", "personal_data"]
+  data_retention_days: 30
+
+# === CUSTOM SHORTCUTS ===
+shortcuts:
+  "todo": "Turn this into a prioritized task list with deadlines"
+  "thread": "Convert this into a viral X thread (max 8 tweets)"
