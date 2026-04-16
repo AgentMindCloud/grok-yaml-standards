@@ -16,11 +16,7 @@
 ### Why This Repo Exists
 `grok-install.yaml` showed the world how a single YAML file can turn any GitHub repo into a Grok-native experience.  
 
-**grok-yaml-standards v1.2.0** now ships **rich production-ready templates**, a ready-to-drop `.grok/` folder, **GitHub release automation**, and **official launch on X** (with @grok’s own positive reply!).
-
-- **X users** → copy-paste YAML → instant custom Grok superpowers  
-- **Developers & companies** → standardized, versioned, secure Grok integrations  
-- **xAI** → massive ecosystem growth, real-world usage data, and community-driven innovation
+**grok-yaml-standards v1.2.0** now ships rich templates, a ready-to-drop `.grok/` folder, GitHub release automation, JSON Schema validation, issue templates, and official launch on X (with @grok’s positive reply!).
 
 ### How to Use Today (Zero Setup)
 1. Copy any file from the ready `.grok/` sample folder  
@@ -30,10 +26,11 @@
 
 ### New in v1.2.0
 - Official X launch + @grok endorsement  
-- Launch badge + permanent thread link in README  
+- Launch badge + permanent thread link  
 - New `LAUNCH.md` with full thread & image  
-- GitHub release workflow + auto-tagging  
-- Starting JSON Schema files for validation (coming next)
+- **JSON Schema validation files** (for GitHub + IDE support)  
+- `.github/ISSUE_TEMPLATE/` for community requests  
+- Contributors gallery below
 
 ### Future Magic Triggers (Table)
 | YAML File            | Primary Trigger Example                  | What It Unlocks                              | Benefit |
@@ -52,13 +49,16 @@
 git clone https://github.com/agentmindcloud/grok-yaml-standards.git
 cd grok-yaml-standards
 # Drop the ready .grok/ folder into your own repos and start using today!
-
+Contributors Gallery
+Thank you to everyone building the future of Grok on X!
+@JanSol0s – Founder & Maintainer
+(Your name here after first PR ⭐)
 Made with ❤️ by the Grok community for xAI and every X user.
 
 Version 1.2.0 • Forward-compatible with grok-install.yaml v1.0+ • Launched on X April 16, 2026
 text---
 
-**LAUNCH.md** (new root-level file — copy-paste as is)
+**2. LAUNCH.md** (new file – create at root)
 
 ```markdown
 # LAUNCH.md
@@ -82,4 +82,4 @@ Every GitHub repo can now become a Grok-powered superpower with one `@grok` comm
 **Next**  
 We’re already on v1.2.0 — JSON Schema validation files, issue templates, and more coming fast.
 
-Star ⭐ Fork 🍴 Use it today!<img width="1168" height="784" alt="grok-yaml-standards" src="https://github.com/user-attachments/assets/e14485a3-8206-4f30-b7b3-140690c2f6b4" />
+Star ⭐ Fork 🍴 Use it today!
