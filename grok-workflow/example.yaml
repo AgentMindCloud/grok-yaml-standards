@@ -1,0 +1,16 @@
+# .grok/grok-workflow.yaml
+version: "1.0.0"
+author: "@JanSol0s"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+
+workflow:
+  name: "ReleasePipeline"
+  steps:
+    - name: "Test"
+      action: "grok-test"
+    - name: "Docs"
+      action: "grok-docs"
+    - name: "Post to X"
+      action: "publish_thread"
