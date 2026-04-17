@@ -1,10 +1,10 @@
 # .grok/grok-security.yaml
-version: "1.1.0"
+version: "1.2.0"
 author: "@JanSol0s"
 compatibility:
   - "grok-install.yaml@1.0+"
   - "grok@2026.4+"
-  - "grok-yaml-standards@1.1+"
+  - "grok-yaml-standards@1.2+"
 
 security:
   scans:
