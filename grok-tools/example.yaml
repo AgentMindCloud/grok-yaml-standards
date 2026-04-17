@@ -1,6 +1,9 @@
-# .grok/grok-tools.yaml
+# grok-tools/example.yaml
+# One annotated example per category (filesystem, shell, x_platform, github,
+# web, memory, workflow). For the full 17-tool registry see
+# ../.grok/grok-tools.yaml.
 # Compatible with: grok-install.yaml@1.0+, grok@2026.4+, grok-yaml-standards@1.2+
-version: "1.0.0"
+version: "1.2.0"
 author: "@JanSol0s"
 compatibility:
   - "grok-install.yaml@1.0+"
@@ -8,209 +11,198 @@ compatibility:
   - "grok-yaml-standards@1.2+"
 
 tools:
+  # filesystem — scoped I/O, path-traversal guard, read-only by default.
   read_file:
-    description: "Read the contents of a file from the repository by path."
-    category: "file_system"
-    inputs:
-      path:
-        type: "string"
-        description: "File path relative to repository root."
-        required: true
-      encoding:
-        type: "string"
-        enum: ["utf-8", "binary", "base64"]
-        default: "utf-8"
-    outputs:
-      content:
-        type: "string"
-        description: "Raw file content."
-      size_bytes:
-        type: "integer"
-        description: "File size in bytes."
-    permissions: ["read"]
-    requires_auth: false
+    category: filesystem
+    description: "Read the contents of a single file by repo-relative path."
+    parameters:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Repo-relative path. '..' traversal and absolute paths are rejected."
+          pattern: "^(?!.*\\.\\.)[^/].*$"
+        encoding:
+          type: string
+          enum: ["utf-8", "binary", "base64"]
+          default: "utf-8"
+      required: [path]
+    returns:
+      type: object
+      properties:
+        content: { type: string }
+        size_bytes: { type: integer }
+        sha256: { type: string }
+    errors:
+      - { code: "NOT_FOUND", message: "No file exists at the given path." }
+      - { code: "PATH_TRAVERSAL", message: "Path escapes the repository root." }
+      - { code: "TOO_LARGE", message: "File exceeds the 10 MB read cap." }
+    security:
+      read_only: true
+      path_traversal_regex: "^(?!.*\\.\\.)[^/].*$"
+      max_bytes: 10485760
 
-  write_file:
-    description: "Write or overwrite a file in the repository at the given path."
-    category: "file_system"
-    inputs:
-      path:
-        type: "string"
-        description: "Destination file path relative to repository root."
-        required: true
-      content:
-        type: "string"
-        description: "Content to write to the file."
-        required: true
-      create_dirs:
-        type: "boolean"
-        description: "Create intermediate directories if they do not exist."
-        default: true
-    outputs:
-      bytes_written:
-        type: "integer"
-      path:
-        type: "string"
-    permissions: ["write"]
-    requires_auth: false
-
+  # shell — arbitrary execution. Gated behind safety profile + explicit grant.
   run_command:
-    description: "Execute a shell command in the repository root and capture its output."
-    category: "code"
-    inputs:
-      command:
-        type: "string"
-        description: "Shell command to run (e.g. 'npm test', 'python -m pytest')."
-        required: true
-      timeout_seconds:
-        type: "integer"
-        description: "Maximum seconds before the command is killed."
-        default: 120
-      working_dir:
-        type: "string"
-        description: "Working directory relative to repository root. Defaults to root."
-    outputs:
-      stdout:
-        type: "string"
-      stderr:
-        type: "string"
-      exit_code:
-        type: "integer"
-    permissions: ["execute"]
-    requires_auth: false
-    rate_limit:
-      requests_per_minute: 10
+    category: shell
+    description: "Execute a shell command inside the repository sandbox."
+    parameters:
+      type: object
+      properties:
+        command: { type: string, minLength: 1 }
+        timeout_seconds:
+          type: integer
+          minimum: 1
+          maximum: 600
+          default: 120
+      required: [command]
+    returns:
+      type: object
+      properties:
+        stdout: { type: string }
+        stderr: { type: string }
+        exit_code: { type: integer }
+    errors:
+      - { code: "SHELL_ACCESS_DENIED", message: "Caller lacks the shell_access grant." }
+      - { code: "PROFILE_MISMATCH", message: "Current safety_profile does not permit shell." }
+    security:
+      requires_safety_profile: ["balanced", "research"]
+      requires_explicit: "shell_access: true"
+      sandbox: true
+      network_isolated_by_default: true
+      rate_limit:
+        requests_per_minute: 10
 
-  search_code:
-    description: "Full-text and semantic search across repository source files."
-    category: "code"
-    inputs:
-      query:
-        type: "string"
-        description: "Search term or natural-language question."
-        required: true
-      file_glob:
-        type: "string"
-        description: "Limit search to files matching this glob (e.g. '**/*.ts')."
-      max_results:
-        type: "integer"
-        default: 20
-    outputs:
-      matches:
-        type: "array"
-        items:
-          type: "object"
-          properties:
-            file:
-              type: "string"
-            line:
-              type: "integer"
-            snippet:
-              type: "string"
-    permissions: ["read"]
-    requires_auth: false
-
-  create_pr:
-    description: "Open a GitHub pull request from the current branch to the default branch."
-    category: "code"
-    inputs:
-      title:
-        type: "string"
-        description: "PR title."
-        required: true
-      body:
-        type: "string"
-        description: "PR description in Markdown."
-      base_branch:
-        type: "string"
-        description: "Target branch. Defaults to the repository default branch."
-        default: "main"
-      draft:
-        type: "boolean"
-        default: false
-    outputs:
-      pr_url:
-        type: "string"
-      pr_number:
-        type: "integer"
-    permissions: ["write", "network"]
-    requires_auth: true
-    auth_provider: "github"
-
+  # x_platform — every write requires human approval; daily rate caps enforced.
   post_thread:
+    category: x_platform
     description: "Post a thread of tweets to X under the authenticated account."
-    category: "social"
-    inputs:
-      tweets:
-        type: "array"
-        description: "Ordered array of tweet texts (max 280 chars each)."
-        required: true
-        items:
-          type: "string"
-          maxLength: 280
-      schedule_at:
-        type: "string"
-        description: "ISO-8601 datetime to schedule the thread. Omit to post immediately."
-        format: "date-time"
-    outputs:
-      thread_url:
-        type: "string"
-      tweet_ids:
-        type: "array"
-        items:
-          type: "string"
-    permissions: ["publish", "network"]
-    requires_auth: true
-    auth_provider: "x_oauth2"
-    rate_limit:
-      requests_per_minute: 5
-      requests_per_day: 100
+    parameters:
+      type: object
+      properties:
+        tweets:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            type: string
+            maxLength: 280
+      required: [tweets]
+    returns:
+      type: object
+      properties:
+        thread_url: { type: string }
+        tweet_ids: { type: array, items: { type: string } }
+    errors:
+      - { code: "APPROVAL_MISSING", message: "Human approval was not granted before posting." }
+      - { code: "RATE_LIMIT", message: "Daily posting cap reached." }
+    security:
+      requires_auth: true
+      auth_provider: "x_oauth2"
+      approval_required: true
+      blocks_if_require_approval_false: true
+      rate_limit:
+        requests_per_day: 20
 
-  analyze_engagement:
-    description: "Fetch engagement metrics (likes, reposts, replies, impressions) for recent posts."
-    category: "social"
-    inputs:
-      post_count:
-        type: "integer"
-        description: "Number of recent posts to analyse."
-        default: 10
-      metric:
-        type: "string"
-        enum: ["likes", "reposts", "replies", "impressions", "all"]
-        default: "all"
-    outputs:
-      posts:
-        type: "array"
-        items:
-          type: "object"
-    permissions: ["read", "network"]
-    requires_auth: true
-    auth_provider: "x_oauth2"
+  # github — writes default to draft PRs so a human reviews before merge.
+  create_pr:
+    category: github
+    description: "Open a GitHub pull request, draft by default."
+    parameters:
+      type: object
+      properties:
+        owner: { type: string, pattern: "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?$" }
+        repo:  { type: string, pattern: "^[A-Za-z0-9._-]{1,100}$" }
+        title: { type: string, minLength: 1 }
+        head_branch: { type: string, minLength: 1 }
+        base_branch: { type: string, default: "main" }
+        draft:       { type: boolean, default: true }
+      required: [owner, repo, title, head_branch]
+    returns:
+      type: object
+      properties:
+        pr_url: { type: string }
+        pr_number: { type: integer }
+    errors:
+      - { code: "AUTH_REQUIRED", message: "GitHub credentials are missing or invalid." }
+      - { code: "PROTECTED_BRANCH", message: "base_branch forbids direct PRs from this actor." }
+    security:
+      requires_auth: true
+      auth_provider: "github"
+      draft_default: true
 
-  web_search:
-    description: "Search the open web and return a ranked list of results with titles and snippets."
-    category: "web"
-    inputs:
-      query:
-        type: "string"
-        required: true
-      num_results:
-        type: "integer"
-        default: 5
-        maximum: 20
-    outputs:
-      results:
-        type: "array"
-        items:
-          type: "object"
-          properties:
-            title:
-              type: "string"
-            url:
-              type: "string"
-            snippet:
-              type: "string"
-    permissions: ["network"]
-    requires_auth: false
-    rate_limit:
-      requests_per_minute: 20
+  # web — HTTPS only, SSRF guards block RFC1918 / localhost / link-local.
+  fetch_url:
+    category: web
+    description: "Fetch a single public HTTPS URL. Private ranges are blocked."
+    parameters:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          pattern: "^https://"
+        method:
+          type: string
+          enum: ["GET", "HEAD"]
+          default: "GET"
+      required: [url]
+    returns:
+      type: object
+      properties:
+        status_code: { type: integer }
+        body: { type: string }
+    errors:
+      - { code: "SSRF_BLOCKED", message: "Target resolves to a blocked address range." }
+      - { code: "NON_HTTPS", message: "Only https:// URLs are permitted." }
+    security:
+      https_only: true
+      ssrf_protection: true
+      blocked_ranges: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "::1/128", "fc00::/7"]
+      max_bytes: 5242880
+
+  # memory — scoped to the calling agent; never store PII or secrets.
+  save_memory:
+    category: memory
+    description: "Persist a key-value entry into the agent's long-term memory."
+    parameters:
+      type: object
+      properties:
+        key:   { type: string, pattern: "^[a-z0-9_.-]{1,128}$" }
+        value: { type: string, maxLength: 65536 }
+        ttl_seconds: { type: integer, minimum: 60, maximum: 31536000 }
+      required: [key, value]
+    returns:
+      type: object
+      properties:
+        key: { type: string }
+        stored_at: { type: string, format: date-time }
+    errors:
+      - { code: "KEY_INVALID", message: "Key contains characters outside the allowed charset." }
+    security:
+      no_sensitive_data_warning: true
+      scope: "agent"
+      encrypted_at_rest: true
+
+  # workflow — composes other tools; inherits delegate security constraints.
+  publish_thread:
+    category: workflow
+    description: "Summarise recent changes (summarize_changes) and post them as an X thread (post_thread)."
+    parameters:
+      type: object
+      properties:
+        base: { type: string }
+        head: { type: string }
+      required: [base, head]
+    returns:
+      type: object
+      properties:
+        thread_url: { type: string }
+        summary: { type: string }
+    errors:
+      - { code: "SUMMARY_FAILED", message: "summarize_changes could not produce output." }
+      - { code: "APPROVAL_MISSING", message: "post_thread approval gate was not cleared." }
+    security:
+      delegates_to: ["summarize_changes", "post_thread"]
+      inherits_security_of_delegates: true
+      approval_required: true

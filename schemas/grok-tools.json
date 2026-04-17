@@ -2,83 +2,144 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-tools.json",
   "title": "grok-tools.yaml",
-  "description": "Official JSON Schema for grok-tools.yaml — the dedicated tools registry that gives every Grok tool a fully-typed signature with input/output schemas, permission declarations, and rate limits. Referenced by grok-agent.yaml and grok-workflow.yaml. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
+  "description": "Official JSON Schema for grok-tools.yaml — the canonical tool registry. Every tool declares a formal contract: typed `parameters`, typed `returns`, an explicit `errors` vocabulary, and a `security` block. Referenced by grok-agent.yaml and grok-workflow.yaml. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "tools"],
   "additionalProperties": false,
   "definitions": {
-    "parameterSchema": {
+    "jsonSchemaFragment": {
       "type": "object",
-      "description": "JSON Schema-style definition for a single tool parameter.",
-      "additionalProperties": false,
+      "description": "A permissive JSON Schema fragment used inside parameters/returns blocks. Supports standard draft-07 keywords.",
       "properties": {
         "type": {
           "type": "string",
-          "description": "Data type of the parameter.",
-          "enum": ["string", "integer", "number", "boolean", "array", "object"]
+          "enum": ["string", "integer", "number", "boolean", "array", "object", "null"]
         },
-        "description": {
-          "type": "string",
-          "description": "Human-readable explanation of this parameter.",
-          "maxLength": 500
-        },
-        "required": {
-          "type": "boolean",
-          "description": "Whether the caller must supply this parameter.",
-          "default": false
-        },
-        "default": {
-          "description": "Value used when the parameter is not supplied by the caller."
-        },
-        "enum": {
-          "type": "array",
-          "description": "Restricts the value to one of the listed options.",
-          "minItems": 1
-        },
+        "description": { "type": "string", "maxLength": 500 },
+        "default": {},
+        "enum": { "type": "array", "minItems": 1 },
         "format": {
           "type": "string",
-          "description": "JSON Schema format hint (e.g. 'date-time', 'email', 'uri').",
           "enum": ["date-time", "date", "time", "email", "uri", "uuid", "ipv4", "ipv6"]
         },
-        "minimum": {
-          "type": "number",
-          "description": "Minimum numeric value (inclusive)."
-        },
-        "maximum": {
-          "type": "number",
-          "description": "Maximum numeric value (inclusive)."
-        },
-        "minLength": {
-          "type": "integer",
-          "description": "Minimum string length.",
-          "minimum": 0
-        },
-        "maxLength": {
-          "type": "integer",
-          "description": "Maximum string length.",
-          "minimum": 0
-        },
-        "pattern": {
-          "type": "string",
-          "description": "Regular expression the string value must match."
-        },
-        "items": {
+        "pattern": { "type": "string" },
+        "minimum": { "type": "number" },
+        "maximum": { "type": "number" },
+        "minLength": { "type": "integer", "minimum": 0 },
+        "maxLength": { "type": "integer", "minimum": 0 },
+        "minItems": { "type": "integer", "minimum": 0 },
+        "maxItems": { "type": "integer", "minimum": 0 },
+        "properties": {
           "type": "object",
-          "description": "Schema for elements of an array-type parameter.",
-          "properties": {
-            "type": { "type": "string" },
-            "maxLength": { "type": "integer" }
-          }
+          "additionalProperties": { "$ref": "#/definitions/jsonSchemaFragment" }
+        },
+        "required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "items": { "$ref": "#/definitions/jsonSchemaFragment" },
+        "additionalProperties": {}
+      }
+    },
+    "errorDefinition": {
+      "type": "object",
+      "description": "A single error code the tool may raise.",
+      "required": ["code", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "UPPER_SNAKE_CASE machine-readable error code.",
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable explanation of when this error is raised.",
+          "minLength": 5,
+          "maxLength": 300
         }
+      }
+    },
+    "rateLimit": {
+      "type": "object",
+      "description": "Per-tool throttling limits.",
+      "additionalProperties": false,
+      "properties": {
+        "requests_per_minute": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6000
+        },
+        "requests_per_day": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      }
+    },
+    "securityBlock": {
+      "type": "object",
+      "description": "Security constraints for the tool. Keys vary by category; unknown keys are permitted so new categories can declare their own controls.",
+      "properties": {
+        "requires_auth": { "type": "boolean" },
+        "auth_provider": {
+          "type": "string",
+          "enum": ["github", "x_oauth2", "google", "slack", "stripe", "aws", "gcp", "azure", "custom"]
+        },
+        "approval_required": { "type": "boolean" },
+        "blocks_if_require_approval_false": { "type": "boolean" },
+        "read_only": { "type": "boolean" },
+        "pure_transform": { "type": "boolean" },
+        "https_only": { "type": "boolean" },
+        "ssrf_protection": { "type": "boolean" },
+        "blocked_ranges": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "path_traversal_regex": { "type": "string" },
+        "no_symlink_follow": { "type": "boolean" },
+        "overwrite_default": { "type": "boolean" },
+        "max_bytes": { "type": "integer", "minimum": 1 },
+        "respects_gitignore": { "type": "boolean" },
+        "sandbox": { "type": "boolean" },
+        "network_isolated_by_default": { "type": "boolean" },
+        "requires_safety_profile": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["strict", "balanced", "research"]
+          },
+          "uniqueItems": true
+        },
+        "requires_explicit": { "type": "string" },
+        "no_bulk_collection": { "type": "boolean" },
+        "own_tweets_only": { "type": "boolean" },
+        "uses_grok_builtin": { "type": "boolean" },
+        "no_sensitive_data_warning": { "type": "boolean" },
+        "encrypted_at_rest": { "type": "boolean" },
+        "scope": { "type": "string", "enum": ["agent", "workspace", "global"] },
+        "scoped_to_repo": { "type": "boolean" },
+        "draft_default": { "type": "boolean" },
+        "owner_pattern": { "type": "string" },
+        "repo_pattern": { "type": "string" },
+        "delegates_to": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "inherits_security_of_delegates": { "type": "boolean" },
+        "rate_limit": { "$ref": "#/definitions/rateLimit" }
       }
     }
   },
   "properties": {
     "version": {
       "type": "string",
-      "description": "Semantic version of this tools registry file.",
+      "description": "Semantic version of this tool registry file.",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "examples": ["1.0.0"]
+      "examples": ["1.2.0"]
     },
     "author": {
       "type": "string",
@@ -97,108 +158,70 @@
     },
     "tools": {
       "type": "object",
-      "description": "Named tool definitions. Each key is the tool identifier referenced in grok-agent.yaml 'tools' arrays and grok-workflow.yaml step 'action' fields.",
+      "description": "Map of tool identifiers to formal contracts. Keys are referenced from grok-agent.yaml 'tools' arrays and grok-workflow.yaml step 'action' fields.",
       "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]{1,63}$"
+      },
       "additionalProperties": {
         "type": "object",
-        "description": "A single tool definition with a typed signature.",
-        "required": ["description", "category"],
+        "description": "A single tool definition.",
+        "required": ["category", "description", "parameters", "returns", "security"],
         "additionalProperties": false,
         "properties": {
-          "description": {
-            "type": "string",
-            "description": "One-sentence explanation of what this tool does.",
-            "minLength": 10,
-            "maxLength": 300
-          },
           "category": {
             "type": "string",
             "description": "Functional category grouping related tools together.",
             "enum": [
-              "file_system",
-              "code",
-              "web",
-              "social",
-              "ai",
-              "data",
-              "notification",
-              "deployment",
-              "testing"
-            ]
-          },
-          "inputs": {
-            "type": "object",
-            "description": "Map of input parameter names to their schemas. Parameters marked required: true must be supplied by the caller.",
-            "additionalProperties": {
-              "$ref": "#/definitions/parameterSchema"
-            }
-          },
-          "outputs": {
-            "type": "object",
-            "description": "Map of output field names to their schemas. Documents what the tool returns on success.",
-            "additionalProperties": {
-              "$ref": "#/definitions/parameterSchema"
-            }
-          },
-          "permissions": {
-            "type": "array",
-            "description": "Capability grants required to invoke this tool. Agents must hold all listed permissions.",
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "enum": [
-                "read",
-                "write",
-                "execute",
-                "network",
-                "publish",
-                "deploy",
-                "admin"
-              ]
-            }
-          },
-          "requires_auth": {
-            "type": "boolean",
-            "description": "Whether the tool requires OAuth or API-key authentication at runtime.",
-            "default": false
-          },
-          "auth_provider": {
-            "type": "string",
-            "description": "Authentication provider identifier when requires_auth is true.",
-            "enum": [
+              "filesystem",
+              "shell",
+              "x_platform",
               "github",
-              "x_oauth2",
-              "google",
-              "slack",
-              "stripe",
-              "aws",
-              "gcp",
-              "azure",
-              "custom"
+              "web",
+              "memory",
+              "workflow"
             ]
           },
-          "rate_limit": {
-            "type": "object",
-            "description": "Request throttling limits for this tool.",
-            "additionalProperties": false,
-            "properties": {
-              "requests_per_minute": {
-                "type": "integer",
-                "description": "Maximum invocations per 60-second window.",
-                "minimum": 1,
-                "maximum": 6000
-              },
-              "requests_per_day": {
-                "type": "integer",
-                "description": "Maximum invocations per calendar day.",
-                "minimum": 1,
-                "maximum": 1000000
-              }
-            }
+          "description": {
+            "type": "string",
+            "description": "One-sentence explanation of what this tool does.",
+            "minLength": 10,
+            "maxLength": 500
           },
+          "parameters": {
+            "allOf": [
+              { "$ref": "#/definitions/jsonSchemaFragment" },
+              {
+                "type": "object",
+                "required": ["type"],
+                "properties": {
+                  "type": { "const": "object" }
+                }
+              }
+            ]
+          },
+          "returns": {
+            "allOf": [
+              { "$ref": "#/definitions/jsonSchemaFragment" },
+              {
+                "type": "object",
+                "required": ["type"],
+                "properties": {
+                  "type": { "const": "object" }
+                }
+              }
+            ]
+          },
+          "errors": {
+            "type": "array",
+            "description": "Explicit error vocabulary this tool may raise.",
+            "items": { "$ref": "#/definitions/errorDefinition" },
+            "uniqueItems": true
+          },
+          "security": { "$ref": "#/definitions/securityBlock" },
           "enabled": {
             "type": "boolean",
-            "description": "Whether this tool is available for use. Set to false to disable without removing the definition.",
+            "description": "Set to false to disable this tool without removing its definition.",
             "default": true
           }
         }

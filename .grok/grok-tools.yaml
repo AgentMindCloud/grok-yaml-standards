@@ -1,84 +1,596 @@
 # .grok/grok-tools.yaml
+# Canonical registry of every tool that agents, workflows, and update jobs
+# may invoke. Each definition is a formal contract: typed parameters,
+# typed returns, an explicit error vocabulary, and a security block.
 # Compatible with: grok-install.yaml@1.0+, grok@2026.4+, grok-yaml-standards@1.2+
-version: "1.0.0"
-author: "@yourhandle"
+version: "1.2.0"
+author: "@JanSol0s"
 compatibility:
   - "grok-install.yaml@1.0+"
   - "grok@2026.4+"
   - "grok-yaml-standards@1.2+"
 
 tools:
+  # ──────────────────────────────────────────────────────────────
+  # filesystem — scoped I/O against the repository working tree
+  # ──────────────────────────────────────────────────────────────
   read_file:
-    description: "Read the contents of a file from the repository by path."
-    category: "file_system"
-    inputs:
-      path:
-        type: "string"
-        description: "File path relative to repository root."
-        required: true
-      encoding:
-        type: "string"
-        enum: ["utf-8", "binary", "base64"]
-        default: "utf-8"
-    outputs:
-      content:
-        type: "string"
-      size_bytes:
-        type: "integer"
-    permissions: ["read"]
-    requires_auth: false
+    category: filesystem
+    description: "Read the contents of a single file by repo-relative path."
+    parameters:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Repo-relative path. Absolute paths and '..' traversal are rejected."
+          pattern: "^(?!.*\\.\\.)[^/].*$"
+        encoding:
+          type: string
+          enum: ["utf-8", "binary", "base64"]
+          default: "utf-8"
+      required: [path]
+    returns:
+      type: object
+      properties:
+        content: { type: string, description: "File contents in the requested encoding." }
+        size_bytes: { type: integer }
+        sha256: { type: string, description: "Hex digest of the raw bytes." }
+    errors:
+      - { code: "NOT_FOUND", message: "No file exists at the given path." }
+      - { code: "PATH_TRAVERSAL", message: "Path escapes the repository root." }
+      - { code: "TOO_LARGE", message: "File exceeds the 10 MB read cap." }
+    security:
+      read_only: true
+      path_traversal_regex: "^(?!.*\\.\\.)[^/].*$"
+      max_bytes: 10485760
 
   write_file:
-    description: "Write or overwrite a file in the repository at the given path."
-    category: "file_system"
-    inputs:
-      path:
-        type: "string"
-        required: true
-      content:
-        type: "string"
-        required: true
-      create_dirs:
-        type: "boolean"
-        default: true
-    outputs:
-      bytes_written:
-        type: "integer"
-    permissions: ["write"]
-    requires_auth: false
+    category: filesystem
+    description: "Create or overwrite a file inside the repository working tree."
+    parameters:
+      type: object
+      properties:
+        path:
+          type: string
+          pattern: "^(?!.*\\.\\.)[^/].*$"
+        content: { type: string }
+        overwrite:
+          type: boolean
+          default: false
+          description: "If false, the call fails when the target exists."
+        create_dirs:
+          type: boolean
+          default: true
+      required: [path, content]
+    returns:
+      type: object
+      properties:
+        path: { type: string }
+        bytes_written: { type: integer }
+        created: { type: boolean, description: "True if the file was newly created." }
+    errors:
+      - { code: "PATH_TRAVERSAL", message: "Path escapes the repository root." }
+      - { code: "ALREADY_EXISTS", message: "File exists and overwrite is false." }
+      - { code: "DISK_FULL", message: "Filesystem has no free space." }
+    security:
+      path_traversal_regex: "^(?!.*\\.\\.)[^/].*$"
+      overwrite_default: false
+      no_symlink_follow: true
 
+  list_directory:
+    category: filesystem
+    description: "List entries under a repo-relative directory."
+    parameters:
+      type: object
+      properties:
+        path:
+          type: string
+          pattern: "^(?!.*\\.\\.)[^/]*$"
+          default: "."
+        recursive:
+          type: boolean
+          default: false
+        max_entries:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          default: 1000
+      required: []
+    returns:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              type: { type: string, enum: ["file", "directory", "symlink"] }
+              size_bytes: { type: integer }
+    errors:
+      - { code: "NOT_FOUND", message: "Directory does not exist." }
+      - { code: "PATH_TRAVERSAL", message: "Path escapes the repository root." }
+    security:
+      read_only: true
+      path_traversal_regex: "^(?!.*\\.\\.)[^/]*$"
+      scoped_to_repo: true
+
+  search_code:
+    category: filesystem
+    description: "Full-text and regex search across tracked source files."
+    parameters:
+      type: object
+      properties:
+        query: { type: string, minLength: 1 }
+        file_glob:
+          type: string
+          description: "Glob limiting the search corpus (e.g. 'src/**/*.ts')."
+        regex:
+          type: boolean
+          default: false
+        max_results:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 50
+      required: [query]
+    returns:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            type: object
+            properties:
+              file: { type: string }
+              line: { type: integer }
+              snippet: { type: string }
+    errors:
+      - { code: "INVALID_REGEX", message: "The supplied pattern failed to compile." }
+      - { code: "SCAN_TIMEOUT", message: "Search exceeded the 30-second budget." }
+    security:
+      read_only: true
+      respects_gitignore: true
+
+  # ──────────────────────────────────────────────────────────────
+  # shell — arbitrary execution, strictly gated
+  # ──────────────────────────────────────────────────────────────
   run_command:
-    description: "Execute a shell command in the repository root and capture output."
-    category: "code"
-    inputs:
-      command:
-        type: "string"
-        required: true
-      timeout_seconds:
-        type: "integer"
-        default: 120
-    outputs:
-      stdout:
-        type: "string"
-      exit_code:
-        type: "integer"
-    permissions: ["execute"]
-    rate_limit:
-      requests_per_minute: 10
+    category: shell
+    description: "Execute a shell command inside the repository sandbox."
+    parameters:
+      type: object
+      properties:
+        command: { type: string, minLength: 1 }
+        working_dir:
+          type: string
+          pattern: "^(?!.*\\.\\.)[^/]*$"
+          default: "."
+        timeout_seconds:
+          type: integer
+          minimum: 1
+          maximum: 600
+          default: 120
+        env:
+          type: object
+          description: "Additional environment variables scoped to the child process."
+          additionalProperties: { type: string }
+      required: [command]
+    returns:
+      type: object
+      properties:
+        stdout: { type: string }
+        stderr: { type: string }
+        exit_code: { type: integer }
+        timed_out: { type: boolean }
+    errors:
+      - { code: "SHELL_ACCESS_DENIED", message: "Caller lacks the shell_access grant." }
+      - { code: "PROFILE_MISMATCH", message: "Current safety_profile does not permit shell." }
+      - { code: "TIMED_OUT", message: "Command did not complete within timeout_seconds." }
+    security:
+      requires_safety_profile: ["balanced", "research"]
+      requires_explicit: "shell_access: true"
+      sandbox: true
+      network_isolated_by_default: true
+      rate_limit:
+        requests_per_minute: 10
 
+  # ──────────────────────────────────────────────────────────────
+  # x_platform — posting/reading on X. All writes require approval.
+  # Rate limits reflect the X Developer Agreement; never scrape at volume.
+  # ──────────────────────────────────────────────────────────────
+  post_thread:
+    category: x_platform
+    description: "Post a thread of tweets to X under the authenticated account."
+    parameters:
+      type: object
+      properties:
+        tweets:
+          type: array
+          minItems: 1
+          maxItems: 25
+          items:
+            type: string
+            maxLength: 280
+        schedule_at:
+          type: string
+          format: date-time
+          description: "ISO-8601 timestamp; omit to post immediately."
+        reply_to_id:
+          type: string
+          description: "Optional tweet ID this thread replies to."
+      required: [tweets]
+    returns:
+      type: object
+      properties:
+        thread_url: { type: string }
+        tweet_ids: { type: array, items: { type: string } }
+    errors:
+      - { code: "APPROVAL_MISSING", message: "Human approval was not granted before posting." }
+      - { code: "RATE_LIMIT", message: "Daily posting cap reached." }
+      - { code: "AUTH_EXPIRED", message: "x_oauth2 token is expired or revoked." }
+    security:
+      requires_auth: true
+      auth_provider: "x_oauth2"
+      approval_required: true
+      blocks_if_require_approval_false: true
+      rate_limit:
+        requests_per_day: 20
+        requests_per_minute: 5
+
+  reply_to_mentions:
+    category: x_platform
+    description: "Reply to recent @mentions of the authenticated account."
+    parameters:
+      type: object
+      properties:
+        reply_text:
+          type: string
+          maxLength: 280
+        mention_ids:
+          type: array
+          items: { type: string }
+          description: "Explicit mention IDs to reply to. If omitted, fetches the latest batch."
+        dry_run:
+          type: boolean
+          default: false
+      required: [reply_text]
+    returns:
+      type: object
+      properties:
+        replies_sent: { type: integer }
+        reply_ids: { type: array, items: { type: string } }
+    errors:
+      - { code: "APPROVAL_MISSING", message: "Human approval was not granted before replying." }
+      - { code: "RATE_LIMIT", message: "Daily reply cap reached." }
+    security:
+      requires_auth: true
+      auth_provider: "x_oauth2"
+      approval_required: true
+      rate_limit:
+        requests_per_day: 50
+        requests_per_minute: 5
+
+  search_x:
+    category: x_platform
+    description: "Query X's public search for posts matching a term. Read-only; bulk collection is prohibited."
+    parameters:
+      type: object
+      properties:
+        query: { type: string, minLength: 1, maxLength: 512 }
+        max_results:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        lang:
+          type: string
+          pattern: "^[a-z]{2}(-[A-Z]{2})?$"
+      required: [query]
+    returns:
+      type: object
+      properties:
+        posts:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              author: { type: string }
+              text: { type: string }
+              created_at: { type: string, format: date-time }
+    errors:
+      - { code: "BULK_COLLECTION_BLOCKED", message: "Requested result volume exceeds per-query policy." }
+      - { code: "RATE_LIMIT", message: "Search window quota exhausted." }
+    security:
+      requires_auth: true
+      auth_provider: "x_oauth2"
+      read_only: true
+      no_bulk_collection: true
+      rate_limit:
+        requests_per_minute: 15
+
+  analyze_engagement:
+    category: x_platform
+    description: "Fetch engagement metrics for the authenticated account's own posts only."
+    parameters:
+      type: object
+      properties:
+        post_count:
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 10
+        metric:
+          type: string
+          enum: ["likes", "reposts", "replies", "impressions", "all"]
+          default: "all"
+      required: []
+    returns:
+      type: object
+      properties:
+        posts:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              likes: { type: integer }
+              reposts: { type: integer }
+              replies: { type: integer }
+              impressions: { type: integer }
+    errors:
+      - { code: "OTHER_ACCOUNT_BLOCKED", message: "Tool refuses to analyse accounts other than the authenticated user." }
+    security:
+      requires_auth: true
+      auth_provider: "x_oauth2"
+      own_tweets_only: true
+      read_only: true
+
+  # ──────────────────────────────────────────────────────────────
+  # github — repository operations. Writes default to draft PRs.
+  # ──────────────────────────────────────────────────────────────
+  create_pr:
+    category: github
+    description: "Open a GitHub pull request. Defaults to draft so a human reviews before merge."
+    parameters:
+      type: object
+      properties:
+        owner:
+          type: string
+          pattern: "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?$"
+        repo:
+          type: string
+          pattern: "^[A-Za-z0-9._-]{1,100}$"
+        title: { type: string, minLength: 1, maxLength: 256 }
+        body: { type: string, maxLength: 65536 }
+        head_branch: { type: string, minLength: 1 }
+        base_branch:
+          type: string
+          default: "main"
+        draft:
+          type: boolean
+          default: true
+      required: [owner, repo, title, head_branch]
+    returns:
+      type: object
+      properties:
+        pr_url: { type: string }
+        pr_number: { type: integer }
+        draft: { type: boolean }
+    errors:
+      - { code: "AUTH_REQUIRED", message: "GitHub credentials are missing or invalid." }
+      - { code: "BRANCH_NOT_FOUND", message: "head_branch does not exist on the remote." }
+      - { code: "PROTECTED_BRANCH", message: "base_branch is protected and forbids direct PRs from this actor." }
+    security:
+      requires_auth: true
+      auth_provider: "github"
+      draft_default: true
+      owner_pattern: "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?$"
+      repo_pattern: "^[A-Za-z0-9._-]{1,100}$"
+
+  fetch_repo:
+    category: github
+    description: "Read a file, tree listing, or metadata block from a GitHub repository."
+    parameters:
+      type: object
+      properties:
+        owner: { type: string, pattern: "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?$" }
+        repo: { type: string, pattern: "^[A-Za-z0-9._-]{1,100}$" }
+        ref: { type: string, default: "main", description: "Branch, tag, or commit SHA." }
+        path: { type: string, description: "Optional file or tree path inside the repo." }
+      required: [owner, repo]
+    returns:
+      type: object
+      properties:
+        content: { type: string }
+        entries: { type: array }
+        sha: { type: string }
+    errors:
+      - { code: "NOT_FOUND", message: "Repository or path does not exist." }
+      - { code: "RATE_LIMIT", message: "GitHub API rate limit reached for this token." }
+    security:
+      requires_auth: true
+      auth_provider: "github"
+      read_only: true
+
+  # ──────────────────────────────────────────────────────────────
+  # web — outbound network. HTTPS only; SSRF guards are mandatory.
+  # ──────────────────────────────────────────────────────────────
   web_search:
-    description: "Search the open web and return ranked results with titles and snippets."
-    category: "web"
-    inputs:
-      query:
-        type: "string"
-        required: true
-      num_results:
-        type: "integer"
-        default: 5
-    outputs:
-      results:
-        type: "array"
-    permissions: ["network"]
-    rate_limit:
-      requests_per_minute: 20
+    category: web
+    description: "Search the open web and return ranked results. Delegates to Grok's built-in search."
+    parameters:
+      type: object
+      properties:
+        query: { type: string, minLength: 1, maxLength: 1000 }
+        num_results:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 5
+      required: [query]
+    returns:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              url: { type: string }
+              snippet: { type: string }
+    errors:
+      - { code: "QUOTA_EXCEEDED", message: "Search quota exhausted for this window." }
+    security:
+      uses_grok_builtin: true
+      rate_limit:
+        requests_per_minute: 20
+
+  fetch_url:
+    category: web
+    description: "Fetch a single public HTTPS URL and return its body. Private address ranges are blocked."
+    parameters:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          pattern: "^https://"
+        method:
+          type: string
+          enum: ["GET", "HEAD"]
+          default: "GET"
+        timeout_seconds:
+          type: integer
+          minimum: 1
+          maximum: 60
+          default: 10
+      required: [url]
+    returns:
+      type: object
+      properties:
+        status_code: { type: integer }
+        headers: { type: object }
+        body: { type: string }
+        bytes_read: { type: integer }
+    errors:
+      - { code: "SSRF_BLOCKED", message: "Target resolves to a blocked address range." }
+      - { code: "NON_HTTPS", message: "Only https:// URLs are permitted." }
+      - { code: "TIMED_OUT", message: "Request exceeded timeout_seconds." }
+    security:
+      https_only: true
+      ssrf_protection: true
+      blocked_ranges: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "::1/128", "fc00::/7"]
+      max_bytes: 5242880
+      rate_limit:
+        requests_per_minute: 30
+
+  # ──────────────────────────────────────────────────────────────
+  # memory — persisted agent state. Never store sensitive data.
+  # ──────────────────────────────────────────────────────────────
+  save_memory:
+    category: memory
+    description: "Persist a key-value entry into the agent's long-term memory store."
+    parameters:
+      type: object
+      properties:
+        key: { type: string, pattern: "^[a-z0-9_.-]{1,128}$" }
+        value: { type: string, maxLength: 65536 }
+        ttl_seconds:
+          type: integer
+          minimum: 60
+          maximum: 31536000
+          description: "Optional expiry. Omit for indefinite retention."
+      required: [key, value]
+    returns:
+      type: object
+      properties:
+        key: { type: string }
+        stored_at: { type: string, format: date-time }
+    errors:
+      - { code: "KEY_INVALID", message: "Key contains characters outside the allowed charset." }
+      - { code: "QUOTA_EXCEEDED", message: "Memory store quota reached." }
+    security:
+      no_sensitive_data_warning: true
+      scope: "agent"
+      encrypted_at_rest: true
+
+  recall_memory:
+    category: memory
+    description: "Look up a previously saved memory entry by key, scoped to the calling agent."
+    parameters:
+      type: object
+      properties:
+        key: { type: string, pattern: "^[a-z0-9_.-]{1,128}$" }
+      required: [key]
+    returns:
+      type: object
+      properties:
+        value: { type: string }
+        stored_at: { type: string, format: date-time }
+        expires_at: { type: string, format: date-time }
+    errors:
+      - { code: "NOT_FOUND", message: "No entry exists for the supplied key." }
+      - { code: "EXPIRED", message: "Entry existed but has passed its TTL." }
+    security:
+      read_only: true
+      scope: "agent"
+
+  # ──────────────────────────────────────────────────────────────
+  # workflow — composite / pure transforms that orchestrate other tools
+  # ──────────────────────────────────────────────────────────────
+  summarize_changes:
+    category: workflow
+    description: "Summarise a diff or commit range into human-readable release notes."
+    parameters:
+      type: object
+      properties:
+        base: { type: string, description: "Base ref (branch, tag, or SHA)." }
+        head: { type: string, description: "Head ref (branch, tag, or SHA)." }
+        style:
+          type: string
+          enum: ["bullet", "narrative", "changelog"]
+          default: "bullet"
+        max_chars:
+          type: integer
+          minimum: 100
+          maximum: 10000
+          default: 1500
+      required: [base, head]
+    returns:
+      type: object
+      properties:
+        summary: { type: string }
+        commits_included: { type: integer }
+    errors:
+      - { code: "RANGE_INVALID", message: "base..head does not resolve to a valid commit range." }
+    security:
+      pure_transform: true
+      read_only: true
+
+  publish_thread:
+    category: workflow
+    description: "Summarise recent changes and post them as a thread on X. Composed of summarize_changes + post_thread."
+    parameters:
+      type: object
+      properties:
+        base: { type: string }
+        head: { type: string }
+        schedule_at:
+          type: string
+          format: date-time
+      required: [base, head]
+    returns:
+      type: object
+      properties:
+        thread_url: { type: string }
+        summary: { type: string }
+    errors:
+      - { code: "SUMMARY_FAILED", message: "summarize_changes could not produce output." }
+      - { code: "APPROVAL_MISSING", message: "post_thread approval gate was not cleared." }
+    security:
+      delegates_to: ["summarize_changes", "post_thread"]
+      inherits_security_of_delegates: true
+      approval_required: true
