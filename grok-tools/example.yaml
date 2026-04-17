@@ -1,0 +1,216 @@
+# .grok/grok-tools.yaml
+# Compatible with: grok-install.yaml@1.0+, grok@2026.4+, grok-yaml-standards@1.2+
+version: "1.0.0"
+author: "@JanSol0s"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.2+"
+
+tools:
+  read_file:
+    description: "Read the contents of a file from the repository by path."
+    category: "file_system"
+    inputs:
+      path:
+        type: "string"
+        description: "File path relative to repository root."
+        required: true
+      encoding:
+        type: "string"
+        enum: ["utf-8", "binary", "base64"]
+        default: "utf-8"
+    outputs:
+      content:
+        type: "string"
+        description: "Raw file content."
+      size_bytes:
+        type: "integer"
+        description: "File size in bytes."
+    permissions: ["read"]
+    requires_auth: false
+
+  write_file:
+    description: "Write or overwrite a file in the repository at the given path."
+    category: "file_system"
+    inputs:
+      path:
+        type: "string"
+        description: "Destination file path relative to repository root."
+        required: true
+      content:
+        type: "string"
+        description: "Content to write to the file."
+        required: true
+      create_dirs:
+        type: "boolean"
+        description: "Create intermediate directories if they do not exist."
+        default: true
+    outputs:
+      bytes_written:
+        type: "integer"
+      path:
+        type: "string"
+    permissions: ["write"]
+    requires_auth: false
+
+  run_command:
+    description: "Execute a shell command in the repository root and capture its output."
+    category: "code"
+    inputs:
+      command:
+        type: "string"
+        description: "Shell command to run (e.g. 'npm test', 'python -m pytest')."
+        required: true
+      timeout_seconds:
+        type: "integer"
+        description: "Maximum seconds before the command is killed."
+        default: 120
+      working_dir:
+        type: "string"
+        description: "Working directory relative to repository root. Defaults to root."
+    outputs:
+      stdout:
+        type: "string"
+      stderr:
+        type: "string"
+      exit_code:
+        type: "integer"
+    permissions: ["execute"]
+    requires_auth: false
+    rate_limit:
+      requests_per_minute: 10
+
+  search_code:
+    description: "Full-text and semantic search across repository source files."
+    category: "code"
+    inputs:
+      query:
+        type: "string"
+        description: "Search term or natural-language question."
+        required: true
+      file_glob:
+        type: "string"
+        description: "Limit search to files matching this glob (e.g. '**/*.ts')."
+      max_results:
+        type: "integer"
+        default: 20
+    outputs:
+      matches:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            file:
+              type: "string"
+            line:
+              type: "integer"
+            snippet:
+              type: "string"
+    permissions: ["read"]
+    requires_auth: false
+
+  create_pr:
+    description: "Open a GitHub pull request from the current branch to the default branch."
+    category: "code"
+    inputs:
+      title:
+        type: "string"
+        description: "PR title."
+        required: true
+      body:
+        type: "string"
+        description: "PR description in Markdown."
+      base_branch:
+        type: "string"
+        description: "Target branch. Defaults to the repository default branch."
+        default: "main"
+      draft:
+        type: "boolean"
+        default: false
+    outputs:
+      pr_url:
+        type: "string"
+      pr_number:
+        type: "integer"
+    permissions: ["write", "network"]
+    requires_auth: true
+    auth_provider: "github"
+
+  post_thread:
+    description: "Post a thread of tweets to X under the authenticated account."
+    category: "social"
+    inputs:
+      tweets:
+        type: "array"
+        description: "Ordered array of tweet texts (max 280 chars each)."
+        required: true
+        items:
+          type: "string"
+          maxLength: 280
+      schedule_at:
+        type: "string"
+        description: "ISO-8601 datetime to schedule the thread. Omit to post immediately."
+        format: "date-time"
+    outputs:
+      thread_url:
+        type: "string"
+      tweet_ids:
+        type: "array"
+        items:
+          type: "string"
+    permissions: ["publish", "network"]
+    requires_auth: true
+    auth_provider: "x_oauth2"
+    rate_limit:
+      requests_per_minute: 5
+      requests_per_day: 100
+
+  analyze_engagement:
+    description: "Fetch engagement metrics (likes, reposts, replies, impressions) for recent posts."
+    category: "social"
+    inputs:
+      post_count:
+        type: "integer"
+        description: "Number of recent posts to analyse."
+        default: 10
+      metric:
+        type: "string"
+        enum: ["likes", "reposts", "replies", "impressions", "all"]
+        default: "all"
+    outputs:
+      posts:
+        type: "array"
+        items:
+          type: "object"
+    permissions: ["read", "network"]
+    requires_auth: true
+    auth_provider: "x_oauth2"
+
+  web_search:
+    description: "Search the open web and return a ranked list of results with titles and snippets."
+    category: "web"
+    inputs:
+      query:
+        type: "string"
+        required: true
+      num_results:
+        type: "integer"
+        default: 5
+        maximum: 20
+    outputs:
+      results:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            title:
+              type: "string"
+            url:
+              type: "string"
+            snippet:
+              type: "string"
+    permissions: ["network"]
+    requires_auth: false
+    rate_limit:
+      requests_per_minute: 20
