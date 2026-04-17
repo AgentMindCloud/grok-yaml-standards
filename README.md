@@ -3,7 +3,7 @@
 **The official community reference library extending grok-install.yaml with 8 new magic YAML standards for Grok on X. Instant agents, workflows, prompts, security & more — all via simple YAML + @grok triggers.**
 
 [![GitHub stars](https://img.shields.io/github/stars/agentmindcloud/grok-yaml-standards)](https://github.com/agentmindcloud/grok-yaml-standards)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
 [![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](standards-overview.md)  
 [![Launched on X](https://img.shields.io/badge/Launched%20on%20X-000000?logo=x)](https://x.com/JanSol0s/status/2044691252327993364)
 
