@@ -172,7 +172,7 @@
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": ["tweet.read", "tweet.write", "users.read", "dm.read", "dm.write", "offline.access"]
+                "enum": ["tweet.read", "tweet.write", "users.read", "dm.read", "dm.write", "offline.access", "voice.read", "voice.write"]
               }
             },
             "github_scopes": {

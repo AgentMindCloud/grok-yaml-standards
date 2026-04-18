@@ -6,10 +6,12 @@ on:
     paths:
       - ".grok/**"
       - "schemas/**"
+      - "specs/**"
   pull_request:
     paths:
       - ".grok/**"
       - "schemas/**"
+      - "specs/**"
 
 jobs:
   # ── Job 1: YAML syntax ────────────────────────────────────────────────────
@@ -19,12 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Parse all .grok/*.yaml files
+      - name: Parse all .grok/*.yaml and specs/*.yaml files
         run: |
           python3 - <<'EOF'
           import yaml, glob, sys
 
-          files = sorted(glob.glob(".grok/*.yaml"))
+          files = sorted(glob.glob(".grok/*.yaml") + glob.glob("specs/*.yaml"))
           errors = []
           for f in files:
               try:
@@ -37,7 +39,7 @@ jobs:
               print("\n".join(errors))
               sys.exit(1)
 
-          print(f"OK — all {len(files)} .grok/ files parse cleanly")
+          print(f"OK — all {len(files)} YAML files parse cleanly")
           EOF
 
   # ── Job 2: JSON schema files are valid JSON ────────────────────────────────
@@ -123,3 +125,9 @@ jobs:
 
       - name: Validate grok-ui
         run: check-jsonschema --schemafile schemas/grok-ui.json .grok/grok-ui.yaml
+
+      - name: Validate grok-swarm spec
+        run: check-jsonschema --schemafile schemas/grok-swarm.schema.json specs/grok-swarm.yaml
+
+      - name: Validate grok-voice spec
+        run: check-jsonschema --schemafile schemas/grok-voice.schema.json specs/grok-voice.yaml

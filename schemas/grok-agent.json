@@ -139,7 +139,7 @@
           "model_override": {
             "type": "string",
             "description": "Per-agent model override. Use 'grok-4-reasoning' for complex multi-step tasks; 'grok-4-mini' for high-volume low-cost agents.",
-            "enum": ["grok-4", "grok-4-reasoning", "grok-4-fast", "grok-4-mini", "grok-3", "grok-3-fast"]
+            "enum": ["grok-4", "grok-4-reasoning", "grok-4-fast", "grok-4-mini", "grok-3", "grok-3-fast", "grok-4.20", "grok-4.20-multi-agent", "grok-4.20-fast"]
           },
           "enabled": {
             "type": "boolean",

@@ -2,7 +2,7 @@
   <h1>grok-yaml-standards</h1>
   <p>Modular YAML extensions for Grok-native agents</p>
 
-  [![Spec: v1.2.0](https://img.shields.io/badge/spec-v1.2.0-blue.svg)](CHANGELOG.md)
+  [![Spec: v2.0.0](https://img.shields.io/badge/spec-v2.0.0-blue.svg)](CHANGELOG.md)
   [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
   [![Compatible: xAI SDK](https://img.shields.io/badge/compatible-xAI%20SDK-FF6B00.svg)](https://docs.x.ai)
   [![Compatible: grok-install](https://img.shields.io/badge/compatible-grok--install%401.0%2B-00B300.svg)](https://github.com/agentmindcloud/grok-install)
@@ -63,6 +63,15 @@ The library also ships four spec extensions added in v1.2.0:
 [`grok-analytics.yaml`](grok-analytics/), and
 [`grok-ui.yaml`](grok-ui/).
 
+**Grok 4.20 specs** added in v2.0.0 live in [`specs/`](specs/) with their schemas in [`schemas/`](schemas/):
+
+| File | Purpose | Requires |
+|------|---------|---------|
+| [`specs/grok-swarm.yaml`](specs/grok-swarm.yaml) | Multi-agent swarm orchestration — parallel execution, coordinator/specialist roles | grok@4.20+ |
+| [`specs/grok-voice.yaml`](specs/grok-voice.yaml) | Speech-to-text and text-to-speech voice session configuration | grok@4.20+ |
+
+See [`docs/index.md`](docs/index.md) for the full 14-spec reference.
+
 ---
 
 ## Tool Registry
@@ -117,9 +126,10 @@ Full per-spec mappings in each spec's `schema.md` under **Cross-References**.
 
 ## JSON Schema Validation
 
-All 12 specs ship a JSON Schema (draft/2020-12) in [`/schemas/`](schemas/).
+All 14 specs ship a JSON Schema (draft/2020-12) in [`/schemas/`](schemas/).
+A single-fetch discovery manifest listing every schema URL lives at [`schemas/index.json`](schemas/index.json).
 
-Add live VS Code validation:
+Add live VS Code / JetBrains YAML validation:
 
 ```json
 {
@@ -129,20 +139,22 @@ Add live VS Code validation:
     "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-security.json": ".grok/grok-security.yaml",
     "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-prompts.json": ".grok/grok-prompts.yaml",
     "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-config.json": ".grok/grok-config.yaml",
-    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-tools.json": ".grok/grok-tools.yaml"
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-tools.json": ".grok/grok-tools.yaml",
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-swarm.schema.json": "specs/grok-swarm.yaml",
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-voice.schema.json": "specs/grok-voice.yaml"
   }
 }
 ```
 
 ---
 
-## What's New in v1.2.0
+## What's New in v2.0.0
 
 See [**CHANGELOG.md**](CHANGELOG.md) for the full version history and [**LAUNCH.md**](LAUNCH.md) for the official launch notes and @grok endorsement.
 
-Highlights: 4 new spec extensions (grok-tools, grok-deploy, grok-analytics, grok-ui),
-JSON Schema upgraded to draft/2020-12, advanced `.grok/*.advanced.yaml` templates,
-comprehensive `schema.md` field references with SDK mapping tables for all 12 specs.
+Highlights: 2 new Grok 4.20 specs (`grok-swarm`, `grok-voice`), non-breaking Grok 4.20 model additions to 4 existing schemas, `schemas/index.json` discovery manifest, and `docs/` reference pages for all new specs.
+
+**v1.2.0 highlights:** 4 spec extensions (grok-tools, grok-deploy, grok-analytics, grok-ui), JSON Schema draft/2020-12, advanced `.grok/*.advanced.yaml` templates, comprehensive `schema.md` field references with SDK mapping tables for all 12 specs.
 
 ---
 
@@ -154,4 +166,4 @@ comprehensive `schema.md` field references with SDK mapping tables for all 12 sp
 
 ---
 
-**v1.2.0** · `grok-install.yaml@1.0+` · Apache 2.0 · [Launched on X April 16, 2026](https://x.com/JanSol0s/status/2044691252327993364)
+**v2.0.0** · `grok-install.yaml@1.0+` · Apache 2.0 · [Launched on X April 16, 2026](https://x.com/JanSol0s/status/2044691252327993364)

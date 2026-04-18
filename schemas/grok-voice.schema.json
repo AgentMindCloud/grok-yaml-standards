@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-voice.schema.json",
+  "title": "grok-voice v2.0.0",
+  "description": "Schema for grok-voice.yaml — Grok 4.20 speech-to-text and text-to-speech configuration.",
+  "type": "object",
+  "required": ["version", "author", "compatibility", "voice"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Spec version. Must be 2.0.0 or higher for voice support.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "author": {
+      "type": "string",
+      "description": "GitHub handle of the spec author, prefixed with @.",
+      "pattern": "^@[A-Za-z0-9_-]+$"
+    },
+    "compatibility": {
+      "type": "array",
+      "description": "Runtime and standards version requirements.",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "voice": {
+      "type": "object",
+      "description": "Root configuration block for Grok voice capabilities.",
+      "required": ["enabled"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Master switch for voice API access. No voice calls are made when false.",
+          "default": false
+        },
+        "stt_model": {
+          "type": "string",
+          "description": "Speech-to-text model identifier.",
+          "enum": ["grok-voice-stt-latest"],
+          "default": "grok-voice-stt-latest"
+        },
+        "tts_model": {
+          "type": "string",
+          "description": "Text-to-speech model identifier. The 'natural' variant uses prosody and emotion modelling.",
+          "enum": ["grok-voice-tts-natural"],
+          "default": "grok-voice-tts-natural"
+        },
+        "voice_id": {
+          "type": "string",
+          "description": "Opaque voice ID from the Grok voices catalog API. Omit to use the model default.",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "features": {
+          "type": "array",
+          "description": "Optional voice capabilities to enable. Omit features not needed to reduce latency.",
+          "uniqueItems": true,
+          "default": [],
+          "items": {
+            "type": "string",
+            "enum": [
+              "real-time-conversation",
+              "emotion-aware",
+              "multi-speaker",
+              "speaker-diarization"
+            ]
+          }
+        },
+        "fallback": {
+          "type": "string",
+          "description": "Behaviour when voice API is unavailable or session limits are exceeded.",
+          "enum": ["text-only", "queue", "error"],
+          "default": "text-only"
+        },
+        "safety": {
+          "type": "object",
+          "description": "Safety controls applied to all voice sessions.",
+          "additionalProperties": false,
+          "properties": {
+            "profanity_filter": {
+              "type": "boolean",
+              "description": "Strip profanity from TTS output. Does not affect STT transcription.",
+              "default": true
+            },
+            "max_duration_seconds": {
+              "type": "integer",
+              "description": "Hard cap on the duration of a single voice session in seconds.",
+              "minimum": 1,
+              "maximum": 3600,
+              "default": 300
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "version": "2.0.0",
+      "author": "@dev_example",
+      "compatibility": ["grok@4.20+", "grok-yaml-standards@2.0+"],
+      "voice": {
+        "enabled": true,
+        "stt_model": "grok-voice-stt-latest",
+        "tts_model": "grok-voice-tts-natural",
+        "features": ["real-time-conversation"],
+        "fallback": "text-only",
+        "safety": {
+          "profanity_filter": true,
+          "max_duration_seconds": 300
+        }
+      }
+    }
+  ]
+}

@@ -39,7 +39,7 @@
         "default_model": {
           "type": "string",
           "description": "Grok model identifier to use for all requests unless overridden.",
-          "enum": ["grok-4", "grok-3", "grok-3-mini", "grok-3-fast", "grok-2", "grok-1"],
+          "enum": ["grok-4", "grok-3", "grok-3-mini", "grok-3-fast", "grok-2", "grok-1", "grok-4.20", "grok-4.20-multi-agent", "grok-4.20-fast"],
           "default": "grok-4"
         },
         "temperature": {
@@ -90,7 +90,7 @@
         "fallback_model": {
           "type": "string",
           "description": "Model to fall back to if the primary model is unavailable or rate-limited.",
-          "enum": ["grok-4", "grok-3", "grok-3-mini", "grok-3-fast", "grok-2", "grok-1"]
+          "enum": ["grok-4", "grok-3", "grok-3-mini", "grok-3-fast", "grok-2", "grok-1", "grok-4.20", "grok-4.20-multi-agent", "grok-4.20-fast"]
         }
       }
     },

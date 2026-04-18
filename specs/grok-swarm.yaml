@@ -1,0 +1,109 @@
+# specs/grok-swarm.yaml
+# Reference spec for grok-swarm — Grok 4.20 multi-agent swarm orchestration.
+#
+# A "swarm" is a coordinated group of Grok agents that share a task queue and
+# work in parallel. Each agent has a role, a model assignment, and an optional
+# tool list. The coordinator agent dispatches subtasks; specialist agents
+# execute them concurrently up to max_parallel_calls.
+#
+# Compatibility:
+#   - grok@4.20+         (multi-agent endpoint required)
+#   - grok-yaml-standards@2.0+
+
+version: "2.0.0"
+author: "@dev_example"
+compatibility:
+  - "grok@4.20+"
+  - "grok-yaml-standards@2.0+"
+
+swarm:
+  # ── Mode ──────────────────────────────────────────────────────────────────
+  # realtime-multi-agent  Low-latency streaming; best for interactive tasks.
+  # high-effort-16        Up to 16 agents; best for deep research pipelines.
+  # single                Single-agent fallback; no parallel execution.
+  mode: "realtime-multi-agent"
+
+  # Maximum agents to instantiate. Must be ≤ 16.
+  # high-effort-16 mode ignores this and always uses up to 16 agents.
+  agent_count: 4
+
+  # ── Agents ────────────────────────────────────────────────────────────────
+  # Each entry defines one agent slot in the swarm.
+  # Roles:
+  #   coordinator  — receives the top-level task and dispatches to others
+  #   researcher   — gathers information via search/fetch tools
+  #   logic        — performs structured reasoning and computation
+  #   creative     — generates text, threads, or media drafts
+  #   critic       — reviews and scores outputs from other agents
+  #   moderator    — applies safety / compliance checks
+  #   custom       — user-defined role; set system_prompt explicitly
+  #
+  # model options (Grok 4.20):
+  #   grok-4.20-multi-agent  Full reasoning + coordination capabilities
+  #   grok-4.20              Standard capability; balanced cost/quality
+  #   grok-4.20-fast         Low-latency variant; best for classification steps
+  #   grok-voice-stt-latest  Speech-to-text; set role: custom for voice input
+  #   grok-voice-tts-natural Text-to-speech; set role: custom for voice output
+  agents:
+    - role: "coordinator"
+      model: "grok-4.20-multi-agent"
+      # prompt_ref points to a key in grok-prompts.yaml.
+      # Use it OR system_prompt — not both.
+      prompt_ref: "orchestrator_system"
+      tools:
+        - "web_search"
+        - "x_search"
+
+    - role: "researcher"
+      model: "grok-4.20"
+      tools:
+        - "web_search"
+        - "x_search"
+      system_prompt: >
+        You are a research agent. Gather factual information from web and X
+        sources as directed by the coordinator. Return structured summaries.
+
+    - role: "logic"
+      model: "grok-4.20"
+      tools:
+        - "code_execution"
+      system_prompt: >
+        You are a logic and computation agent. Verify facts, run code, and
+        produce structured analytical output. Do not speculate.
+
+    - role: "critic"
+      model: "grok-4.20-fast"
+      # critic uses no external tools — reviews in-context output only
+      system_prompt: >
+        You are a critic agent. Review draft outputs from other agents.
+        Score quality (1-10), flag inaccuracies, and suggest improvements.
+
+  # ── State ─────────────────────────────────────────────────────────────────
+  # Controls how inter-agent state is stored between turns.
+  state:
+    # Encrypt shared state at rest. Always true in production.
+    encrypted: true
+    # session-only  State lives for the duration of this swarm run.
+    # long-term     State persisted to the repo's memory store (like grok-agent
+    #               long_term memory). Useful for iterative research projects.
+    # none          No state sharing. Each agent works independently.
+    persistence: "session-only"
+
+  # ── Orchestration ─────────────────────────────────────────────────────────
+  orchestration:
+    # Hard timeout for the entire swarm run. Coordinator aborts all agents
+    # after this many seconds even if work is incomplete.
+    timeout_seconds: 300
+
+    # Maximum number of agent calls that may execute concurrently.
+    # Lowering this reduces API cost at the expense of latency.
+    max_parallel_calls: 4
+
+    # Retry policy applied to individual agent calls that return errors.
+    retry_policy:
+      max_attempts: 3
+      # none         Fail immediately on first error.
+      # linear       Wait delay_seconds * attempt_number between retries.
+      # exponential  Wait delay_seconds * 2^(attempt_number-1) — recommended.
+      backoff: "exponential"
+      delay_seconds: 2
