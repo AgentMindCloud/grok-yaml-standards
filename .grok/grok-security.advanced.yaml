@@ -1,0 +1,54 @@
+# Advanced security profile for high-trust research agents.
+# safety_profile: "research" enables sandboxed shell and broader network
+# access. Rate limits are global (daily_cap + qps + burst) — per-tool
+# throttling is configured in grok-tools.yaml security.rate_limit blocks.
+version: "1.2.0"
+author: "@dev_example"
+compatibility: ["grok@2026.4+"]
+
+security:
+  safety_profile: "research"
+  auto_block_prs: true
+  notify_email: "security@example.com"
+
+  permissions:
+    x_scopes: ["tweet.read"]         # read only — write not needed for research
+    filesystem: "read_write_sandbox"
+    shell_access: true               # research profile allows sandboxed shell
+    network_access: "https_only"
+
+  # Global rate limit applies across all tool calls for agents using this profile.
+  # Per-tool throttling is declared in grok-tools.yaml under each tool's
+  # security.rate_limit block.
+  rate_limits:
+    daily_cap: 500
+    qps: 2
+    burst: 10
+
+  scans:
+    SecretDetection:
+      type: "secrets"
+      files: ["**/*"]
+      exclude_files: ["**/fixtures/**", "**/__mocks__/**"]
+      alert_level: "critical"
+      severity_threshold: "low"
+      fail_on_finding: true
+      frequency: "on_commit"
+      enabled: true
+
+    StaticAnalysis:
+      type: "sast"
+      alert_level: "high"
+      severity_threshold: "medium"
+      fail_on_finding: true
+      frequency: "on_pr"
+      enabled: true
+
+    DependencyAudit:
+      type: "dependencies"
+      files: ["package.json", "package-lock.json", "requirements.txt"]
+      alert_level: "high"
+      severity_threshold: "medium"
+      fail_on_finding: false           # warn but don't block for dependency findings
+      frequency: "daily"
+      enabled: true
