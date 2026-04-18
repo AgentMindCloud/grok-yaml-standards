@@ -1,147 +1,157 @@
-# grok-yaml-standards
+<div align="center">
+  <h1>grok-yaml-standards</h1>
+  <p>Modular YAML extensions for Grok-native agents</p>
 
-**The official community reference library extending grok-install.yaml with 12 magic YAML standards for Grok on X. Instant agents, workflows, prompts, security, deployments & more — all via simple YAML + @grok triggers.**
+  [![Spec: v1.2.0](https://img.shields.io/badge/spec-v1.2.0-blue.svg)](CHANGELOG.md)
+  [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+  [![Compatible: xAI SDK](https://img.shields.io/badge/compatible-xAI%20SDK-FF6B00.svg)](https://docs.x.ai)
+  [![Compatible: grok-install](https://img.shields.io/badge/compatible-grok--install%401.0%2B-00B300.svg)](https://github.com/agentmindcloud/grok-install)
+  [![Compatible: LiteLLM](https://img.shields.io/badge/compatible-LiteLLM-7C3AED.svg)](https://github.com/BerriAI/litellm)
+  [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/agentmindcloud/grok-yaml-standards/actions)
 
-[![GitHub stars](https://img.shields.io/github/stars/agentmindcloud/grok-yaml-standards)](https://github.com/agentmindcloud/grok-yaml-standards)  
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](standards-overview.md)  
-[![Launched on X](https://img.shields.io/badge/Launched%20on%20X-000000?logo=x)](https://x.com/JanSol0s/status/2044691252327993364)
-
-**The Central Community Hub for Grok YAML Magic on X**
-
-**Extending the official `grok-install.yaml` standard with 12 magic YAML files** — the definitive open reference library so that **X users, developers, and xAI** can all benefit from frictionless Grok-powered features via simple YAML files in any repo.
-
----
-
-## Why This Repo Exists
-
-`grok-install.yaml` showed the world how a single YAML file can turn any GitHub repo into a Grok-native experience.
-
-**grok-yaml-standards v1.2.0** ships rich templates, a ready-to-drop `.grok/` folder, GitHub release automation, comprehensive JSON Schema validation, issue templates, and an official launch on X (with @grok's positive reply!).
+  [**Quickstart**](#quickstart) · [**Spec Files**](#the-grok-folder) ·
+  [**Tool Registry**](#tool-registry) · [**Security**](#security) ·
+  [**Changelog**](CHANGELOG.md)
+</div>
 
 ---
 
-## How to Use Today (Zero Setup)
+## What Is This?
 
-1. Copy any file from the ready `.grok/` sample folder
-2. Place it in your repo at `.grok/grok-xxx.yaml`
-3. Add a magic trigger comment in any issue, PR, or README
-4. Tag `@grok` — Grok instantly activates the feature
+Drop a `.grok/` folder into any repo and it becomes Grok-native.
+This library defines modular YAML specs that extend `grok-install.yaml`:
+agent definitions, workflows, security policies, prompts, and tool configurations.
 
----
-
-## The 12 Magic YAML Standards
-
-### Core Standards
-
-| YAML File | Primary Trigger | What It Unlocks | Benefit |
-|-----------|----------------|-----------------|---------|
-| [`grok-config.yaml`](grok-config/) | `@grok config` | Repo-wide model settings & defaults | Consistency |
-| [`grok-prompts.yaml`](grok-prompts/) | `@grok use prompts:<id>` | Reusable versioned prompt library | Creativity |
-| [`grok-agent.yaml`](grok-agent/) | `@grok spawn agent:<Name>` | Persistent stateful Grok agents | Automation |
-| [`grok-workflow.yaml`](grok-workflow/) | `@grok run workflow:<Name>` | Multi-step automated processes | Productivity |
-| [`grok-update.yaml`](grok-update/) | `@grok update` | Smart repo & knowledge updates | Freshness |
-| [`grok-test.yaml`](grok-test/) | `@grok test` | AI-powered testing & validation | Quality |
-| [`grok-docs.yaml`](grok-docs/) | `@grok docs` | Auto-generated documentation | Clarity |
-| [`grok-security.yaml`](grok-security/) | `@grok security scan` | Real-time security & compliance | Safety |
-
-### Spec Extensions
-
-| YAML File | Primary Trigger | What It Unlocks | Benefit |
-|-----------|----------------|-----------------|---------|
-| [`grok-tools.yaml`](grok-tools/) | `@grok tools list` | Typed tool registry for agents & workflows | Correctness |
-| [`grok-deploy.yaml`](grok-deploy/) | `@grok deploy <target>` | Deployment targets, env vars, health checks | Reliability |
-| [`grok-analytics.yaml`](grok-analytics/) | `@grok analytics report` | Opt-in telemetry with PII controls | Insight |
-| [`grok-ui.yaml`](grok-ui/) | `@grok ui status` | Voice commands, dashboard widgets, shortcuts | Experience |
+Compatible with the official xAI SDK, LiteLLM, and Semantic Kernel.
+Used by the `grok-install` runtime to power agents on X.
 
 ---
 
-## Quick Start
+## Quickstart
 
 ```bash
-git clone https://github.com/agentmindcloud/grok-yaml-standards.git
-cd grok-yaml-standards
-# Drop the ready .grok/ folder into your repo and start triggering today!
+# Copy the starter templates into your repo
 cp -r .grok/ /your/repo/.grok/
+
+# Or fetch a single spec
+curl -LO https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/.grok/grok-agent.yaml
+mv grok-agent.yaml /your/repo/.grok/grok-agent.yaml
+
+# Then tag @grok in any issue or PR comment to activate
 ```
+
+---
+
+## The `.grok/` Folder
+
+| File | Purpose | Required? |
+|------|---------|-----------|
+| [`grok-agent.yaml`](.grok/grok-agent.yaml) | Define named agents — tools, memory, model, safety profile | For agents |
+| [`grok-workflow.yaml`](.grok/grok-workflow.yaml) | Multi-step workflow pipelines with conditions and retry logic | For complex flows |
+| [`grok-security.yaml`](.grok/grok-security.yaml) | Permissions, rate limits, scan policies, safety profile | Recommended |
+| [`grok-prompts.yaml`](.grok/grok-prompts.yaml) | Reusable prompt templates — system prompts, temperature, reasoning mode | Recommended |
+| [`grok-config.yaml`](.grok/grok-config.yaml) | Global defaults — model, language, privacy, shortcuts | Optional |
+| [`grok-tools.yaml`](.grok/grok-tools.yaml) | Tool registry — typed signatures, permissions, rate limits | For custom tools |
+
+> **Advanced examples** for multi-agent orchestration, parallel workflows, and research security
+> profiles are in `.grok/*.advanced.yaml`. Full spec documentation lives in each
+> [`grok-*/`](grok-agent/) subfolder.
+
+The library also ships four spec extensions added in v1.2.0:
+[`grok-deploy.yaml`](grok-deploy/),
+[`grok-update.yaml`](grok-update/),
+[`grok-analytics.yaml`](grok-analytics/), and
+[`grok-ui.yaml`](grok-ui/).
+
+---
+
+## Tool Registry
+
+[`grok-tools.yaml`](grok-tools/) is the formal tool registry for every built-in tool.
+Each entry carries a full JSON Schema for inputs and outputs, error codes, security notes,
+and per-tool rate limits. Agents reference tools by key — if a key isn't in the registry,
+the agent won't call it.
+
+Browse the 17 built-in tools across 7 categories in [`grok-tools/schema.md`](grok-tools/schema.md).
+
+---
+
+## Security
+
+All security considerations in this library are **defensive**. The specs help teams:
+
+- Prevent credential leaks with pre-commit secret scanning (`grok-security.yaml`)
+- Enforce least-privilege tool access for agents (`grok-tools.yaml`, `safety_profile`)
+- Guard against prompt injection via `key_constraints` and static `system_prompt` layers
+- Audit AI-generated content before it reaches X (`approval_required` in `grok-workflow.yaml`)
+
+This library never enables attacks on xAI, Grok, or the X platform.
+Full threat model: [`SECURITY.md`](SECURITY.md).
+
+---
+
+## Ecosystem Integration
+
+| Project | What it does |
+|---------|-------------|
+| [`grok-install`](https://github.com/agentmindcloud/grok-install) | The YAML standard this library extends — foundation layer |
+| [`grok-install-cli`](https://github.com/agentmindcloud/grok-install-cli) | CLI runtime that reads `.grok/` and activates features |
+| [`awesome-grok-agents`](https://github.com/agentmindcloud/awesome-grok-agents) | Community-built agents using these specs |
+| [xAI SDK docs](https://docs.x.ai) | Official SDK this library maps to |
+
+### SDK Field Mapping
+
+| grok-yaml field | xAI SDK | LiteLLM | Semantic Kernel |
+|-----------------|---------|---------|-----------------|
+| `default_model` | `model` in `CreateChatCompletionRequest` | `model="xai/grok-4"` | `OpenAIPromptExecutionSettings.ModelId` |
+| `temperature` | `temperature` | `temperature=` | `OpenAIPromptExecutionSettings.Temperature` |
+| `max_tokens` | `max_tokens` | `max_tokens=` | `OpenAIPromptExecutionSettings.MaxTokens` |
+| `stream_responses` | `stream=True` | `stream=True` | `StreamingChatMessageContent` |
+| `reasoning_depth` | `reasoning_effort` ("low"/"medium"/"high") | N/A (model-level) | N/A |
+| `tools[]` | `tools` array in request | `tools=` list of function dicts | `KernelPlugin` methods |
+| `system_prompt` | `messages[{role:"system"}]` | `messages=` system entry | system message in `ChatHistory` |
+
+Full per-spec mappings in each spec's `schema.md` under **Cross-References**.
 
 ---
 
 ## JSON Schema Validation
 
-Every standard ships with a full JSON Schema in [`/schemas/`](schemas/). Validators are available for all 12 specs:
+All 12 specs ship a JSON Schema (draft/2020-12) in [`/schemas/`](schemas/).
 
-| Schema | Validates |
-|--------|-----------|
-| [`schemas/grok-config.json`](schemas/grok-config.json) | Model settings, privacy, shortcuts |
-| [`schemas/grok-prompts.json`](schemas/grok-prompts.json) | Prompt templates, variables, output format |
-| [`schemas/grok-agent.json`](schemas/grok-agent.json) | Agent definitions, tools, memory, rate limits |
-| [`schemas/grok-workflow.json`](schemas/grok-workflow.json) | Workflow steps, conditions, error handling |
-| [`schemas/grok-update.json`](schemas/grok-update.json) | Update jobs, schedule, actions |
-| [`schemas/grok-test.json`](schemas/grok-test.json) | Test suites, alert levels, categories |
-| [`schemas/grok-docs.json`](schemas/grok-docs.json) | Doc targets, sections, style presets |
-| [`schemas/grok-security.json`](schemas/grok-security.json) | Scans, compliance standards, notifications |
-| [`schemas/grok-tools.json`](schemas/grok-tools.json) | Tool signatures, permissions, rate limits |
-| [`schemas/grok-deploy.json`](schemas/grok-deploy.json) | Deploy targets, resource limits, health checks |
-| [`schemas/grok-analytics.json`](schemas/grok-analytics.json) | Event definitions, PII safety, retention |
-| [`schemas/grok-ui.json`](schemas/grok-ui.json) | Voice commands, dashboard widgets, shortcuts |
-
-Add this to your VS Code `settings.json` for live validation:
+Add live VS Code validation:
 
 ```json
 {
   "yaml.schemas": {
-    "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-config.json": ".grok/grok-config.yaml",
-    "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-agent.json": ".grok/grok-agent.yaml",
-    "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-tools.json": ".grok/grok-tools.yaml"
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-agent.json": ".grok/grok-agent.yaml",
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-workflow.json": ".grok/grok-workflow.yaml",
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-security.json": ".grok/grok-security.yaml",
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-prompts.json": ".grok/grok-prompts.yaml",
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-config.json": ".grok/grok-config.yaml",
+    "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-tools.json": ".grok/grok-tools.yaml"
   }
 }
 ```
 
 ---
 
-## Compatibility Matrix
+## What's New in v1.2.0
 
-Every file in this library is forward-compatible with the specs below. The matrix shows the minimum version required for each standard.
+See [**CHANGELOG.md**](CHANGELOG.md) for the full version history and [**LAUNCH.md**](LAUNCH.md) for the official launch notes and @grok endorsement.
 
-| Standard | grok-install.yaml | grok | grok-yaml-standards |
-|----------|------------------|------|---------------------|
-| grok-config | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-prompts | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-agent | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-workflow | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-update | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-test | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-docs | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-security | `@1.0+` | `@2026.4+` | `@1.1+` |
-| grok-tools *(new)* | `@1.0+` | `@2026.4+` | `@1.2+` |
-| grok-deploy *(new)* | `@1.0+` | `@2026.4+` | `@1.2+` |
-| grok-analytics *(new)* | `@1.0+` | `@2026.4+` | `@1.2+` |
-| grok-ui *(new)* | `@1.0+` | `@2026.4+` | `@1.2+` |
+Highlights: 4 new spec extensions (grok-tools, grok-deploy, grok-analytics, grok-ui),
+JSON Schema upgraded to draft/2020-12, advanced `.grok/*.advanced.yaml` templates,
+comprehensive `schema.md` field references with SDK mapping tables for all 12 specs.
 
 ---
 
-## New in v1.2.0
+## Contributors
 
-- Official X launch + @grok endorsement
-- **Comprehensive JSON Schema validation** — all 12 specs have full property-level schemas with enums, constraints, required fields, and descriptions
-- **4 new spec extensions**: grok-tools, grok-deploy, grok-analytics, grok-ui
-- Compatibility matrix
-- `.github/ISSUE_TEMPLATE/` for community requests
-- Contributors gallery
+- **[@JanSol0s](https://x.com/JanSol0s)** — Founder & Maintainer
+
+*(Open a PR to add your name ⭐)*
 
 ---
 
-## Contributors Gallery
-
-Thank you to everyone building the future of Grok on X!
-
-- **@JanSol0s** — Founder & Maintainer
-
-*(Your name here after your first PR ⭐)*
-
----
-
-Made with ❤️ by the Grok community for xAI and every X user.
-
-**Version 1.2.0** · Forward-compatible with `grok-install.yaml@1.0+` · Licensed under Apache 2.0 · [Launched on X April 16, 2026](https://x.com/JanSol0s/status/2044691252327993364)
+**v1.2.0** · `grok-install.yaml@1.0+` · Apache 2.0 · [Launched on X April 16, 2026](https://x.com/JanSol0s/status/2044691252327993364)

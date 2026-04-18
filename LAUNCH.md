@@ -39,7 +39,7 @@ Full launch thread: https://x.com/JanSol0s/status/2044691252327993364
 
 ### Full JSON Schema validation for all 12 specs
 
-Every spec ships a draft-07 JSON Schema in `/schemas/` with:
+Every spec ships a JSON Schema (draft/2020-12) in `/schemas/` with:
 - Enum constraints on all known string values
 - Pattern validation (semver, X handles, BCP-47 language codes, globs)
 - Numeric bounds on temperature, token counts, timeouts, and retry counts
