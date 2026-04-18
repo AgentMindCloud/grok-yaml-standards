@@ -155,3 +155,28 @@ agents:
 | `grok-workflow.yaml` | `steps[].action` | Workflow steps can invoke agents via the spec name `grok-agent`. |
 | xAI SDK | `system_prompt` | Maps to `messages[{role: "system", content: "..."}]` in the chat completions request. |
 | xAI SDK | `model_override` | Maps to `CreateChatCompletionRequest.model`. |
+
+### Depends On
+- **grok-config.yaml**: global model, temperature, and personality defaults apply before per-agent overrides.
+- **grok-tools.yaml**: every string in `tools[]` must be a registered key in the tool registry.
+- **grok-security.yaml**: `safety_profile` must align with the declared security policy.
+- **grok-prompts.yaml**: `system_prompt` field mirrors the static layer of a prompt entry.
+
+### Used By
+- **grok-workflow.yaml**: `steps[].action: grok-agent` spawns agents by name.
+- **grok-install.yaml**: `intelligence_layer` block controls which agents are activated.
+
+### LiteLLM Mapping
+| This spec field | LiteLLM parameter |
+|-----------------|-------------------|
+| `model_override` | `model="xai/grok-4"` (or variant) |
+| `tools[]` | `tools=` list of function dicts |
+| `temperature` (via grok-config) | `temperature=` |
+
+### Semantic Kernel Mapping
+| This spec field | SK equivalent |
+|-----------------|---------------|
+| `tools[]` | `KernelPlugin` methods registered on the kernel |
+| `memory` | `ISemanticTextMemory` / `VolatileMemoryStore` |
+| `system_prompt` | system message in `ChatHistory` |
+| `personality` | `OpenAIPromptExecutionSettings.ChatSystemPrompt` |

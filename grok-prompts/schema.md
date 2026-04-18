@@ -147,3 +147,27 @@ prompt_library:
 | xAI SDK | `reasoning_mode` | Maps to `reasoning_effort` parameter: `"low"` / `"high"` / `"max"`. |
 | xAI SDK | `response_format` | Maps to the `response_format` object in the chat completions API request. |
 | xAI SDK | `system_prompt` | Maps to the first `system` role entry in the `messages[]` array. |
+
+### Depends On
+- **grok-config.yaml**: `temperature`, `max_tokens`, and `default_model` are overridden per-prompt; the global values serve as fallbacks.
+
+### Used By
+- **grok-agent.yaml**: `system_prompt` field mirrors the static layer of a prompt entry.
+- **grok-workflow.yaml**: `steps[].template` references `prompt_library` keys.
+
+### LiteLLM Mapping
+| This spec field | LiteLLM parameter |
+|-----------------|-------------------|
+| `model` | `model="xai/grok-4"` (or variant) |
+| `temperature` | `temperature=` |
+| `max_tokens` | `max_tokens=` |
+| `response_format` | `response_format={"type":"json_object"}` |
+
+### Semantic Kernel Mapping
+| This spec field | SK equivalent |
+|-----------------|---------------|
+| `template` | `KernelFunction` prompt template string |
+| `variables[]` | `KernelArguments` keys |
+| `system_prompt` | system message in `ChatHistory` |
+| `reasoning_mode` | `OpenAIPromptExecutionSettings` extended thinking |
+| `output_format` | `OpenAIPromptExecutionSettings.ResponseFormat` |

@@ -184,3 +184,25 @@ grok:
 | xAI SDK | `default_model` | Maps to the `model` parameter in `CreateChatCompletionRequest`. |
 | xAI SDK | `stream_responses` | Maps to `stream: true` in the API request body. |
 | xAI SDK | `reasoning_depth` | Maps to the `reasoning_effort` parameter (`"low"` / `"medium"` / `"high"`). |
+
+### Depends On
+- **grok-install.yaml**: installation must be present before config is applied.
+
+### Used By
+- **All 11 other specs**: every spec reads `grok-config.yaml` for global defaults before applying its own overrides. Conflicts resolve in favour of the more-specific spec.
+
+### LiteLLM Mapping
+| This spec field | LiteLLM parameter |
+|-----------------|-------------------|
+| `default_model` | `model="xai/grok-4"` |
+| `temperature` | `temperature=` |
+| `max_tokens` | `max_tokens=` |
+| `stream_responses` | `stream=True` |
+
+### Semantic Kernel Mapping
+| This spec field | SK equivalent |
+|-----------------|---------------|
+| `default_model` | `OpenAIPromptExecutionSettings.ModelId` |
+| `temperature` | `OpenAIPromptExecutionSettings.Temperature` |
+| `max_tokens` | `OpenAIPromptExecutionSettings.MaxTokens` |
+| `personality` | `OpenAIPromptExecutionSettings.ChatSystemPrompt` |

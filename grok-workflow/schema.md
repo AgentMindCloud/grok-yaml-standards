@@ -169,3 +169,32 @@ workflows:
 | `grok-deploy.yaml` | `action: grok-deploy` | Target names resolve against targets defined in `grok-deploy.yaml`. |
 | `grok-test.yaml` | `action: grok-test` | Suite names resolve against suites defined in `grok-test.yaml`. |
 | xAI SDK | `timeout_minutes` | Maps to the session execution deadline in the xAI runtime. |
+
+### Depends On
+- **grok-config.yaml**: global model and defaults apply to all LLM-driven steps.
+- **grok-agent.yaml**: agent names referenced in `steps[].action`.
+- **grok-tools.yaml**: tool IDs used in `steps[].action` must exist in the registry.
+- **grok-deploy.yaml**: deploy target names referenced in `steps[].action: grok-deploy`.
+- **grok-test.yaml**: suite names referenced in `steps[].action: grok-test`.
+- **grok-security.yaml**: scan names referenced in `steps[].action: grok-security`.
+- **grok-docs.yaml**: target names referenced in `steps[].action: grok-docs`.
+- **grok-prompts.yaml**: prompt keys referenced in `steps[].template`.
+- **grok-analytics.yaml**: event emission wired to workflow completion events.
+
+### Used By
+- Nothing — grok-workflow is the top-level orchestrator. `grok-install.yaml` activates the workflow runtime.
+
+### LiteLLM Mapping
+| This spec field | LiteLLM parameter |
+|-----------------|-------------------|
+| `model` (from grok-config) | `model="xai/grok-4"` for LLM-driven steps |
+| `steps[].template` | `messages=` constructed from prompt template |
+| `steps[].retry` | `num_retries=` in `litellm.completion` |
+
+### Semantic Kernel Mapping
+| This spec field | SK equivalent |
+|-----------------|---------------|
+| `steps[]` sequence | `KernelFunction` pipeline (sequential planner) |
+| `steps[].condition` | `KernelFunctionFilter` predicate |
+| `steps[].approval_required` | `HumanInTheLoopFilter` pattern |
+| `on_failure` | `KernelPlugin` exception handling strategy |

@@ -93,3 +93,31 @@ analytics:
 | `segment` | Twilio Segment |
 | `datadog` | Datadog |
 | `custom` | Self-hosted or custom endpoint via `endpoint` field |
+
+---
+
+## Cross-References
+
+### Depends On
+- **grok-config.yaml**: global defaults and `privacy.allow_telemetry` gate all analytics collection.
+- **grok-install.yaml**: activates or suppresses analytics infrastructure.
+
+### Used By
+- **grok-workflow.yaml**: workflow steps can emit analytics events via the analytics provider.
+
+### xAI SDK Mapping
+| This spec field | xAI SDK equivalent |
+|-----------------|--------------------|
+| `enabled` | Configuration layer — no direct SDK parameter; gates all downstream calls. |
+| `sampling_rate` | No SDK equivalent; applied server-side before events reach the provider. |
+| `api_key_secret` | Resolved at runtime; never exposed to the SDK layer. |
+
+### LiteLLM Mapping
+| This spec field | LiteLLM parameter |
+|-----------------|-------------------|
+| (all fields) | Configuration layer — no direct LiteLLM parameters. Analytics events are emitted as side-channel telemetry, not as part of the AI completion request. |
+
+### Semantic Kernel Mapping
+| This spec field | SK equivalent |
+|-----------------|---------------|
+| (all fields) | Configuration layer — no direct SK equivalents. |

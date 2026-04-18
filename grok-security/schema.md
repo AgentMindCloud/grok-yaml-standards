@@ -154,3 +154,22 @@ security:
 | `grok-agent.yaml` | agents with `run_command` tool | Agents that can execute shell commands should always be paired with a complementary `sast` scan. |
 | `grok-workflow.yaml` | `steps[].action: grok-security` | Schedule scans as steps within a workflow (e.g. nightly `SecretDetection`). |
 | xAI SDK | scan result payload | Returned as `response_format: json_object` containing CVE identifiers and severity bands. |
+
+### Depends On
+- **grok-config.yaml**: `safety_profile` in config is the global baseline; per-scan `severity_threshold` overrides it.
+
+### Used By
+- **grok-agent.yaml**: agents set `safety_profile` which must align with this spec.
+- **grok-workflow.yaml**: `steps[].action: grok-security` runs named scans.
+- **grok-deploy.yaml**: `require_approval` behaviour is informed by security policy.
+- **grok-test.yaml**: `block_merge_on_fail` integrates with the security gate.
+
+### LiteLLM Mapping
+| This spec field | LiteLLM parameter |
+|-----------------|-------------------|
+| (all fields) | Security scan results are returned as structured JSON from the Grok runtime; no direct LiteLLM parameters correspond to scan configuration fields. |
+
+### Semantic Kernel Mapping
+| This spec field | SK equivalent |
+|-----------------|---------------|
+| (all fields) | No direct SK equivalents — scan configuration is resolved by the Grok runtime, not the SK kernel. |

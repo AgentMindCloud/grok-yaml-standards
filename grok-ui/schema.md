@@ -154,3 +154,29 @@ ui:
 | `key` | string | ✅ | — | pattern: `^(ctrl\|cmd\|alt\|shift\|meta)(\+(ctrl\|cmd\|alt\|shift\|meta\|[a-z0-9]))+$`; maxLength: 50 | Key combination. Use `ctrl` for Win/Linux, `cmd` for macOS. |
 | `action` | string | ✅ | — | minLength: 1; maxLength: 100 | Grok spec or action to invoke. Approval gates on target actions are never bypassed. |
 | `description` | string | — | — | maxLength: 200 | Human-readable description shown in the shortcut help panel. |
+
+---
+
+## Cross-References
+
+### Depends On
+- **grok-config.yaml**: locale defaults from config are overridden by `ui.locale`.
+- **grok-install.yaml**: UI features (dashboard, voice) are activated in the `intelligence_layer` block.
+
+### Used By
+- **grok-install.yaml**: `intelligence_layer.ui_extensions` block controls which UI features are enabled.
+
+### xAI SDK Mapping
+| This spec field | xAI SDK equivalent |
+|-----------------|--------------------|
+| (all fields) | UI configuration layer — no direct AI SDK parameters. Voice commands, dashboard widgets, and keyboard shortcuts are resolved by the IDE extension runtime, not the LLM. |
+
+### LiteLLM Mapping
+| This spec field | LiteLLM parameter |
+|-----------------|-------------------|
+| (all fields) | UI configuration layer — no direct LiteLLM parameters. |
+
+### Semantic Kernel Mapping
+| This spec field | SK equivalent |
+|-----------------|---------------|
+| (all fields) | UI configuration layer — no direct SK equivalents. |
