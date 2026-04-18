@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-tools.json",
-  "title": "grok-tools.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-tools.schema.json",
+  "title": "grok-tools v1.2.0",
   "description": "Official JSON Schema for grok-tools.yaml — the canonical tool registry. Every tool declares a formal contract: typed `parameters`, typed `returns`, an explicit `errors` vocabulary, and a `security` block. Referenced by grok-agent.yaml and grok-workflow.yaml. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "tools"],

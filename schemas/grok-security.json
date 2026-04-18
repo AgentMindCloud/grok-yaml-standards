@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-security.json",
-  "title": "grok-security.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-security.schema.json",
+  "title": "grok-security v1.2.0",
   "description": "Official JSON Schema for grok-security.yaml — defines real-time security and compliance scans, PR blocking rules, and multi-channel notifications. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "security"],
@@ -153,6 +153,80 @@
           "items": {
             "type": "string",
             "examples": ["MIT", "Apache-2.0", "BSD-3-Clause", "ISC"]
+          }
+        },
+        "safety_profile": {
+          "type": "string",
+          "description": "Global safety posture. 'strict' auto-enables secret detection and blocks PRs on any finding; 'research' allows broader scopes with audit logging.",
+          "enum": ["strict", "balanced", "research"],
+          "default": "balanced"
+        },
+        "permissions": {
+          "type": "object",
+          "description": "Explicit capability grants for the security scanning agent. Follows least-privilege: omit scopes the scanner does not need.",
+          "additionalProperties": false,
+          "properties": {
+            "x_scopes": {
+              "type": "array",
+              "description": "X OAuth2 scopes the agent may use.",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": ["tweet.read", "tweet.write", "users.read", "dm.read", "dm.write", "offline.access"]
+              }
+            },
+            "github_scopes": {
+              "type": "array",
+              "description": "GitHub OAuth scopes the agent may use.",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": ["repo", "read:org", "read:user", "pull_requests", "issues"]
+              }
+            },
+            "filesystem": {
+              "type": "string",
+              "description": "Filesystem access level granted to the scanning agent.",
+              "enum": ["none", "read_only", "read_write_sandbox"],
+              "default": "read_only"
+            },
+            "shell_access": {
+              "type": "boolean",
+              "description": "Allow the agent to execute shell commands. Always false for security scanning agents.",
+              "default": false
+            },
+            "network_access": {
+              "type": "string",
+              "description": "Outbound network access level. 'https_only' is the minimum required for CVE database lookups.",
+              "enum": ["none", "https_only", "full"],
+              "default": "https_only"
+            }
+          }
+        },
+        "rate_limits": {
+          "type": "object",
+          "description": "Global rate limits applied to all security scanner API calls. daily_cap is required to prevent runaway cost.",
+          "required": ["daily_cap"],
+          "additionalProperties": false,
+          "properties": {
+            "daily_cap": {
+              "type": "integer",
+              "description": "Maximum total API calls per calendar day across all scans.",
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "qps": {
+              "type": "number",
+              "description": "Maximum queries per second sustained rate.",
+              "minimum": 0.001,
+              "maximum": 100
+            },
+            "burst": {
+              "type": "integer",
+              "description": "Maximum number of simultaneous in-flight requests.",
+              "minimum": 1,
+              "maximum": 1000
+            }
           }
         }
       }

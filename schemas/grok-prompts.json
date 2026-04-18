@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-prompts.json",
-  "title": "grok-prompts.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-prompts.schema.json",
+  "title": "grok-prompts v1.2.0",
   "description": "Official JSON Schema for grok-prompts.yaml — defines a reusable, versioned prompt library with variable interpolation, per-prompt model overrides, and tagging. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "prompt_library"],
@@ -73,13 +73,15 @@
             "type": "number",
             "description": "Per-prompt sampling temperature override. Overrides the global grok.temperature setting.",
             "minimum": 0,
-            "maximum": 2
+            "maximum": 2,
+            "default": 0.7
           },
           "max_tokens": {
             "type": "integer",
             "description": "Per-prompt token cap override. Useful for prompts that need longer or shorter outputs.",
             "minimum": 1,
-            "maximum": 131072
+            "maximum": 131072,
+            "default": 4096
           },
           "model": {
             "type": "string",
@@ -101,6 +103,24 @@
             "type": "string",
             "description": "Expected structure of the prompt output.",
             "enum": ["plain", "markdown", "json", "yaml", "thread", "bullet_list", "table"]
+          },
+          "system_prompt": {
+            "type": "string",
+            "description": "Static system-level instruction prepended before the template. Must be static text — never interpolate user-supplied values here.",
+            "minLength": 10,
+            "maxLength": 32000
+          },
+          "reasoning_mode": {
+            "type": "string",
+            "description": "Extended thinking budget for this prompt. 'max' produces highest-quality reasoning but increases latency and cost significantly.",
+            "enum": ["off", "low", "high", "max"],
+            "default": "off"
+          },
+          "response_format": {
+            "type": "string",
+            "description": "Structured output format constraint. 'json_object' enforces valid JSON; 'json_schema' additionally validates against a declared schema.",
+            "enum": ["text", "json_object", "json_schema"],
+            "default": "text"
           },
           "cache_responses": {
             "type": "boolean",

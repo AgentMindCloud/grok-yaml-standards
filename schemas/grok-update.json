@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-update.json",
-  "title": "grok-update.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-update.schema.json",
+  "title": "grok-update v1.2.0",
   "description": "Official JSON Schema for grok-update.yaml — defines scheduled smart update jobs that keep documentation, dependencies, and knowledge bases fresh. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "updates"],

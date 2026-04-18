@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-agent.json",
-  "title": "grok-agent.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-agent.schema.json",
+  "title": "grok-agent v1.2.0",
   "description": "Official JSON Schema for grok-agent.yaml — defines persistent, stateful Grok agents with tool access, memory modes, and session limits. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "agents"],
@@ -32,6 +32,7 @@
       "type": "object",
       "description": "Named agent definitions. Each key is the agent identifier used in '@grok spawn agent:<Name>' triggers.",
       "minProperties": 1,
+      "maxProperties": 20,
       "additionalProperties": {
         "type": "object",
         "description": "A single persistent Grok agent definition.",
@@ -48,31 +49,12 @@
             "type": "array",
             "description": "List of tool identifiers the agent is permitted to invoke. Tool definitions live in grok-tools.yaml.",
             "uniqueItems": true,
+            "minItems": 1,
+            "maxItems": 50,
             "items": {
               "type": "string",
               "description": "Tool identifier matching a key in the grok-tools.yaml tools registry.",
-              "enum": [
-                "read_file",
-                "write_file",
-                "run_command",
-                "search_code",
-                "create_pr",
-                "post_thread",
-                "analyze_engagement",
-                "reply_to_mentions",
-                "web_search",
-                "web_fetch",
-                "run_tests",
-                "deploy",
-                "send_notification",
-                "read_database",
-                "write_database",
-                "call_api",
-                "list_files",
-                "delete_file",
-                "create_branch",
-                "merge_pr"
-              ]
+              "pattern": "^[a-z][a-z0-9_]*$"
             }
           },
           "memory": {
@@ -85,7 +67,7 @@
             "type": "integer",
             "description": "Maximum number of back-and-forth turns per session before the agent requires re-spawning.",
             "minimum": 1,
-            "maximum": 1000,
+            "maximum": 500,
             "default": 50
           },
           "auto_save_state": {
@@ -147,6 +129,17 @@
                 "maximum": 100000
               }
             }
+          },
+          "safety_profile": {
+            "type": "string",
+            "description": "Safety posture for this agent. 'strict' disables shell access and limits tool scope; 'research' permits broader access with additional audit logging.",
+            "enum": ["strict", "balanced", "research"],
+            "default": "balanced"
+          },
+          "model_override": {
+            "type": "string",
+            "description": "Per-agent model override. Use 'grok-4-reasoning' for complex multi-step tasks; 'grok-4-mini' for high-volume low-cost agents.",
+            "enum": ["grok-4", "grok-4-reasoning", "grok-4-fast", "grok-4-mini", "grok-3", "grok-3-fast"]
           },
           "enabled": {
             "type": "boolean",

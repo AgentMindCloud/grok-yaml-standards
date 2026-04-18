@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-analytics.json",
-  "title": "grok-analytics.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-analytics.schema.json",
+  "title": "grok-analytics v1.2.0",
   "description": "Official JSON Schema for grok-analytics.yaml — opt-in telemetry configuration with fine-grained event control, PII safety declarations, provider abstraction, and GDPR-friendly retention settings. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "analytics"],

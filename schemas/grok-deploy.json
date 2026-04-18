@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-deploy.json",
-  "title": "grok-deploy.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-deploy.schema.json",
+  "title": "grok-deploy v1.2.0",
   "description": "Official JSON Schema for grok-deploy.yaml — defines deployment targets, environment variable resolution, resource limits, health checks, and rollback rules. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "deploy"],

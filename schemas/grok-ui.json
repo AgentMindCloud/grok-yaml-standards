@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-ui.json",
-  "title": "grok-ui.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-ui.schema.json",
+  "title": "grok-ui v1.2.0",
   "description": "Official JSON Schema for grok-ui.yaml — configures voice commands, a live dashboard with typed widgets, keyboard shortcuts, themes, and locale settings. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "ui"],

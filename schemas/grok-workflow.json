@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-workflow.json",
-  "title": "grok-workflow.yaml",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grokyaml.dev/schemas/v1.2.0/grok-workflow.schema.json",
+  "title": "grok-workflow v1.2.0",
   "description": "Official JSON Schema for grok-workflow.yaml — defines multi-step automated workflows with conditional branching, error handling, and composable actions. Compatible with grok-install.yaml@1.0+ and grok@2026.4+.",
   "type": "object",
   "required": ["version", "author", "compatibility", "workflows"],
@@ -60,8 +60,8 @@
           "on_failure": {
             "type": "string",
             "description": "Global failure strategy applied when any step fails and the step has no local on_error override.",
-            "enum": ["stop", "continue", "retry", "notify"],
-            "default": "stop"
+            "enum": ["abort", "skip", "retry", "notify_user"],
+            "default": "abort"
           },
           "notify_on_complete": {
             "type": "boolean",
@@ -72,6 +72,7 @@
             "type": "array",
             "description": "Ordered sequence of actions executed top-to-bottom. Steps share a runtime context and can reference previous step outputs.",
             "minItems": 1,
+            "maxItems": 100,
             "items": {
               "type": "object",
               "description": "A single workflow step.",
@@ -82,7 +83,8 @@
                   "type": "string",
                   "description": "Short display name for this step shown in workflow progress output.",
                   "minLength": 1,
-                  "maxLength": 100
+                  "maxLength": 100,
+                  "pattern": "^[a-z][a-z0-9_-]*$"
                 },
                 "action": {
                   "type": "string",
@@ -108,26 +110,65 @@
                 "condition": {
                   "type": "string",
                   "description": "JavaScript-style boolean expression evaluated against previous step outputs. Step is skipped when false.",
-                  "maxLength": 500,
+                  "maxLength": 512,
                   "examples": ["steps.RunTests.exit_code === 0", "steps.SecurityScan.alerts.length === 0"]
                 },
                 "on_error": {
                   "type": "string",
                   "description": "Error handling strategy for this specific step. Overrides the workflow-level on_failure setting.",
-                  "enum": ["stop", "continue", "retry", "notify"]
+                  "enum": ["abort", "skip", "retry", "notify_user"]
                 },
-                "retry_count": {
-                  "type": "integer",
-                  "description": "Number of automatic retries on transient failure before triggering on_error. Only used when on_error is 'retry'.",
-                  "minimum": 1,
-                  "maximum": 5,
-                  "default": 3
+                "retry": {
+                  "type": "object",
+                  "description": "Retry configuration. Only used when on_error is 'retry'.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "max_attempts": {
+                      "type": "integer",
+                      "description": "Maximum number of retry attempts before the step is considered failed.",
+                      "minimum": 1,
+                      "maximum": 10
+                    },
+                    "backoff": {
+                      "type": "string",
+                      "description": "Delay growth strategy between retry attempts.",
+                      "enum": ["none", "linear", "exponential"],
+                      "default": "exponential"
+                    },
+                    "delay_seconds": {
+                      "type": "integer",
+                      "description": "Initial delay in seconds before the first retry (or fixed delay when backoff is 'none').",
+                      "minimum": 1,
+                      "maximum": 3600
+                    }
+                  }
                 },
                 "timeout_minutes": {
                   "type": "integer",
                   "description": "Per-step timeout in minutes. Overrides the workflow-level timeout for this step.",
                   "minimum": 1,
                   "maximum": 120
+                },
+                "timeout_seconds": {
+                  "type": "integer",
+                  "description": "Per-step timeout in seconds. Takes precedence over timeout_minutes when both are set.",
+                  "minimum": 1,
+                  "maximum": 86400
+                },
+                "approval_required": {
+                  "type": "boolean",
+                  "description": "Pause the workflow and require human approval before this step executes. Always use for steps that post to X, deploy to production, or open PRs.",
+                  "default": false
+                },
+                "depends_on": {
+                  "type": "array",
+                  "description": "Step names that must complete successfully before this step starts.",
+                  "uniqueItems": true,
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "description": "Name of a step defined in the same workflow."
+                  }
                 },
                 "env": {
                   "type": "object",
