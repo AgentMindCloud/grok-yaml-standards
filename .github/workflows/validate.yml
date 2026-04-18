@@ -1,0 +1,125 @@
+name: Validate YAML specs
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - ".grok/**"
+      - "schemas/**"
+  pull_request:
+    paths:
+      - ".grok/**"
+      - "schemas/**"
+
+jobs:
+  # ── Job 1: YAML syntax ────────────────────────────────────────────────────
+  yaml-syntax:
+    name: YAML syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse all .grok/*.yaml files
+        run: |
+          python3 - <<'EOF'
+          import yaml, glob, sys
+
+          files = sorted(glob.glob(".grok/*.yaml"))
+          errors = []
+          for f in files:
+              try:
+                  yaml.safe_load(open(f))
+              except yaml.YAMLError as e:
+                  errors.append(f"  {f}: {e}")
+
+          if errors:
+              print(f"FAIL — {len(errors)} file(s) have YAML syntax errors:")
+              print("\n".join(errors))
+              sys.exit(1)
+
+          print(f"OK — all {len(files)} .grok/ files parse cleanly")
+          EOF
+
+  # ── Job 2: JSON schema files are valid JSON ────────────────────────────────
+  json-syntax:
+    name: JSON syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse all schemas/*.json files
+        run: |
+          python3 - <<'EOF'
+          import json, glob, sys
+
+          files = sorted(glob.glob("schemas/*.json"))
+          errors = []
+          for f in files:
+              try:
+                  json.load(open(f))
+              except json.JSONDecodeError as e:
+                  errors.append(f"  {f}: {e}")
+
+          if errors:
+              print(f"FAIL — {len(errors)} schema file(s) contain invalid JSON:")
+              print("\n".join(errors))
+              sys.exit(1)
+
+          print(f"OK — all {len(files)} schema files are valid JSON")
+          EOF
+
+  # ── Job 3: schema compliance ───────────────────────────────────────────────
+  schema-validate:
+    name: Schema compliance
+    needs: [yaml-syntax, json-syntax]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install check-jsonschema
+        run: pip install "check-jsonschema>=0.28"
+
+      - name: Validate grok-agent specs
+        run: |
+          check-jsonschema --schemafile schemas/grok-agent.json \
+            .grok/grok-agent.yaml \
+            .grok/grok-agent.advanced.yaml
+
+      - name: Validate grok-workflow specs
+        run: |
+          check-jsonschema --schemafile schemas/grok-workflow.json \
+            .grok/grok-workflow.yaml \
+            .grok/grok-workflow.advanced.yaml
+
+      - name: Validate grok-security specs
+        run: |
+          check-jsonschema --schemafile schemas/grok-security.json \
+            .grok/grok-security.yaml \
+            .grok/grok-security.advanced.yaml
+
+      - name: Validate grok-config
+        run: check-jsonschema --schemafile schemas/grok-config.json .grok/grok-config.yaml
+
+      - name: Validate grok-prompts
+        run: check-jsonschema --schemafile schemas/grok-prompts.json .grok/grok-prompts.yaml
+
+      - name: Validate grok-tools
+        run: check-jsonschema --schemafile schemas/grok-tools.json .grok/grok-tools.yaml
+
+      - name: Validate grok-deploy
+        run: check-jsonschema --schemafile schemas/grok-deploy.json .grok/grok-deploy.yaml
+
+      - name: Validate grok-analytics
+        run: check-jsonschema --schemafile schemas/grok-analytics.json .grok/grok-analytics.yaml
+
+      - name: Validate grok-test
+        run: check-jsonschema --schemafile schemas/grok-test.json .grok/grok-test.yaml
+
+      - name: Validate grok-docs
+        run: check-jsonschema --schemafile schemas/grok-docs.json .grok/grok-docs.yaml
+
+      - name: Validate grok-update
+        run: check-jsonschema --schemafile schemas/grok-update.json .grok/grok-update.yaml
+
+      - name: Validate grok-ui
+        run: check-jsonschema --schemafile schemas/grok-ui.json .grok/grok-ui.yaml
