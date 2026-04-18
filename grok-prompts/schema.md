@@ -91,3 +91,59 @@ code_review:
 | `thread` | Ordered list of tweets, each under 280 chars. |
 | `bullet_list` | Unordered bullet list. |
 | `table` | Markdown table with headers. |
+
+---
+
+## Validation Examples
+
+```yaml
+# INVALID — template too short
+prompt_library:
+  t:
+    template: "Hi"
+# Error: template must be at least 10 characters
+
+# INVALID — variable used in template but not declared
+prompt_library:
+  review:
+    template: "Review the {code} for {language} issues."
+    variables: ["code"]
+# Error: {language} is used in template but not declared in variables
+
+# VALID — full review prompt with reasoning
+prompt_library:
+  code_review:
+    description: "Static analysis review prompt for any language."
+    template: |
+      Review the following {language} code for {focus}.
+      Severity: critical / high / medium / low.
+      Code:
+      {code}
+    variables: ["language", "focus", "code"]
+    output_format: "markdown"
+    temperature: 0.1
+    reasoning_mode: "high"
+    response_format: "text"
+    tags: ["code", "security", "review"]
+```
+
+---
+
+## Security Notes
+
+- **`template`**: Never place user-supplied values into a `system:` block — use template variables in the user block only (see PT1 in `security-considerations.md`).
+- **`cache_responses: false`** for any prompt whose variables could include PII, session-specific data, or secrets; cached responses may leak across callers.
+- **`system_prompt`**: Must be static text; dynamic context belongs in template variables so it stays in the user message layer, not the system boundary.
+- **`reasoning_mode: max`** significantly increases token usage and latency; always pair with an explicit `max_tokens` cap to prevent runaway cost.
+
+---
+
+## Cross-References
+
+| Spec / SDK | Field | Relationship |
+|------------|-------|--------------|
+| `grok-agent.yaml` | `system_prompt` | Static agent-level instruction; the prompt `template` adds the per-call variable layer on top. |
+| `grok-workflow.yaml` | `steps[].template` | Workflow steps reference a `prompt_library` key via the `template` field. |
+| xAI SDK | `reasoning_mode` | Maps to `reasoning_effort` parameter: `"low"` / `"high"` / `"max"`. |
+| xAI SDK | `response_format` | Maps to the `response_format` object in the chat completions API request. |
+| xAI SDK | `system_prompt` | Maps to the first `system` role entry in the `messages[]` array. |

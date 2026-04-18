@@ -113,3 +113,59 @@ A step whose condition evaluates to `false` is **skipped** (not failed). Use `on
 | `continue` | Log the failure and proceed to the next step. Use only for non-critical informational steps. |
 | `retry` | Retry the step up to `retry_count` times with exponential backoff. |
 | `notify` | Stop and post an alert (X or email) so a human can investigate and re-trigger. |
+
+---
+
+## Validation Examples
+
+```yaml
+# INVALID — steps array is empty
+workflows:
+  MyFlow:
+    description: "An empty workflow that does nothing."
+    steps: []
+# Error: steps must have at least 1 item
+
+# INVALID — depends_on references a non-existent step
+workflows:
+  MyFlow:
+    description: "Workflow with a dangling dependency."
+    steps:
+      - name: "StepB"
+        action: "grok-test"
+        depends_on: ["StepA"]   # StepA is not defined
+# Error: depends_on references unknown step name 'StepA'
+
+# VALID — two steps with explicit dependency and approval gate
+workflows:
+  TestAndDeploy:
+    description: "Run tests then deploy to staging after approval."
+    steps:
+      - name: "RunTests"
+        action: "grok-test"
+        on_error: "stop"
+      - name: "Deploy"
+        action: "grok-deploy"
+        depends_on: ["RunTests"]
+        approval_required: true
+```
+
+---
+
+## Security Notes
+
+- **`approval_required: true`** must precede any step that posts to X, deploys to production, or opens a non-draft PR — never skip it for these actions.
+- **`condition`**: Never embed user-supplied strings in condition expressions; only reference step output fields such as `steps.RunTests.exit_code` (see WT1 in `security-considerations.md`).
+- **`env`**: Use `${{ secrets.KEY }}` secret references for sensitive values; never hardcode credentials as literal strings.
+- **`on_error: stop`** (or `abort` in JSON Schema v6+) for security-critical steps; `continue` only for non-blocking informational steps.
+
+---
+
+## Cross-References
+
+| Spec / SDK | Field | Relationship |
+|------------|-------|--------------|
+| `grok-tools.yaml` | `steps[].action` (tool IDs) | Tool action names must exist as keys in the `grok-tools.yaml` registry. |
+| `grok-deploy.yaml` | `action: grok-deploy` | Target names resolve against targets defined in `grok-deploy.yaml`. |
+| `grok-test.yaml` | `action: grok-test` | Suite names resolve against suites defined in `grok-test.yaml`. |
+| xAI SDK | `timeout_minutes` | Maps to the session execution deadline in the xAI runtime. |

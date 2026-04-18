@@ -107,3 +107,50 @@ scans:
 | `NIST` | NIST Cybersecurity Framework |
 | `OWASP-Top10` | OWASP Top 10 Web Application Security Risks |
 | `CIS` | CIS Critical Security Controls |
+
+---
+
+## Validation Examples
+
+```yaml
+# INVALID — scans map is empty
+security:
+  scans: {}
+# Error: scans must have at least 1 property
+
+# INVALID — unknown scan type
+security:
+  scans:
+    MyCheck:
+      type: "xss_scanner"
+# Error: type must be one of: secrets, dependencies, license_gdpr, sast, dast, sca, container, iac, api_security
+
+# VALID — minimal secrets scan
+security:
+  scans:
+    SecretDetection:
+      type: "secrets"
+      alert_level: "critical"
+      fail_on_finding: true
+      enabled: true
+```
+
+---
+
+## Security Notes
+
+- **`auto_block_prs`**: Test on a non-production branch before enabling — an overly broad `files` glob can inadvertently block legitimate PRs.
+- **`fail_on_finding: true`** unconditionally for `type: secrets`; `false` is appropriate only for informational scan dashboards.
+- **`notify_on_x`**: Always requires human review before security findings are posted publicly (see ST2 in `security-considerations.md`).
+- **`allowed_licenses`**: Only declare compliance frameworks you have actually mapped; declaring `GDPR` without enforcement gives false assurance that is worse than none.
+
+---
+
+## Cross-References
+
+| Spec / SDK | Field | Relationship |
+|------------|-------|--------------|
+| `grok-config.yaml` | `grok.safety_profile: strict` | Strict safety profile auto-enables secret detection scanning. |
+| `grok-agent.yaml` | agents with `run_command` tool | Agents that can execute shell commands should always be paired with a complementary `sast` scan. |
+| `grok-workflow.yaml` | `steps[].action: grok-security` | Schedule scans as steps within a workflow (e.g. nightly `SecretDetection`). |
+| xAI SDK | scan result payload | Returned as `response_format: json_object` containing CVE identifiers and severity bands. |

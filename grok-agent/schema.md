@@ -108,3 +108,50 @@ The following tools are defined in `grok-tools.yaml` v1.2.0 and available for ag
 | `long_term` | State persists across sessions on disk. Requires `auto_save_state: true` to write. |
 | `session_only` | State is cleared at the end of each session. Default. |
 | `none` | No memory; each turn is fully stateless. |
+
+---
+
+## Validation Examples
+
+```yaml
+# INVALID — missing required field
+agents:
+  MyAgent:
+    tools: ["read_file"]
+# Error: 'description' is required
+
+# INVALID — tool name not matching pattern
+agents:
+  MyAgent:
+    description: "Does something."
+    tools: ["Unknown-Tool"]
+# Error: tools[0] must match ^[a-z][a-z0-9_]*$
+
+# VALID — minimal definition
+agents:
+  CodeHelper:
+    description: "Assists with code review and refactoring tasks."
+    tools: ["read_file", "search_code"]
+    memory: "session_only"
+```
+
+---
+
+## Security Notes
+
+- **`system_prompt`**: Never interpolate user-controlled input — attacker-controlled PR descriptions can escape instruction boundaries (see AT1 in `security-considerations.md`).
+- **`permissions`**: Least-privilege — only grant `execute` if the agent truly needs shell access; `publish` only if it must post to X.
+- **`tools`**: Omit tools the agent doesn't need; tool scope is the primary blast-radius control for what damage a compromised prompt can cause.
+- **`rate_limit`**: Always set for agents with `x_platform` tools (`post_thread`, `reply_to_mentions`) to prevent runaway posting loops.
+
+---
+
+## Cross-References
+
+| Spec / SDK | Field | Relationship |
+|------------|-------|--------------|
+| `grok-tools.yaml` | `tools[]` items | Every string must be a key in the `grok-tools.yaml` registry. |
+| `grok-config.yaml` | `grok.personality` | Overridden by agent-level `personality`. |
+| `grok-workflow.yaml` | `steps[].action` | Workflow steps can invoke agents via the spec name `grok-agent`. |
+| xAI SDK | `system_prompt` | Maps to `messages[{role: "system", content: "..."}]` in the chat completions request. |
+| xAI SDK | `model_override` | Maps to `CreateChatCompletionRequest.model`. |
