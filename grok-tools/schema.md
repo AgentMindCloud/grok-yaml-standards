@@ -1,132 +1,173 @@
-# grok-tools.yaml Field Reference
+# grok-tools.yaml — Complete Field Reference
 
-Every tool in the registry is a **formal contract**: typed `parameters`, typed
-`returns`, an explicit `errors` vocabulary, and a `security` block. Agents and
-workflows reference tools by name; the contract here is the single source of
-truth for I/O shape and safety constraints.
+Version: 1.2.0
+JSON Schema: `schemas/grok-tools.json`
 
-## Top-level fields
+Every tool is a **formal contract**: typed `parameters`, typed `returns`, an explicit
+`errors` vocabulary, and a `security` block. Agents and workflows reference tools by
+name; this file is the single source of truth for I/O shape and safety constraints.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `version` | `string` | ✅ | Semver of this tool registry file (e.g. `"1.2.0"`). |
-| `author` | `string` | ✅ | X handle of the maintainer, prefixed with `@`. |
-| `compatibility` | `string[]` | ✅ | Spec identifiers this file is compatible with (e.g. `grok-install.yaml@1.0+`). |
-| `tools` | `object` | ✅ | Map of `tool_id` → tool definition. Keys match `^[a-z][a-z0-9_]{1,63}$`. |
+---
 
-## Tool definition fields
+## Root Object
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `category` | `string` | ✅ | One of: `filesystem`, `shell`, `x_platform`, `github`, `web`, `memory`, `workflow`. |
-| `description` | `string` | ✅ | One-sentence explanation of what the tool does (10–500 chars). |
-| `parameters` | `object` | ✅ | JSON Schema fragment for the input. Must be `type: object` with `properties` and (optionally) `required`. |
-| `returns` | `object` | ✅ | JSON Schema fragment for the success output. Must be `type: object`. |
-| `errors` | `array` | — | Explicit error vocabulary. Each entry has `code` (UPPER_SNAKE_CASE) and `message`. |
-| `security` | `object` | ✅ | Safety constraints. Keys vary by category; see below. |
-| `enabled` | `boolean` | — | Set to `false` to disable the tool without deleting its definition. Defaults to `true`. |
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `version` | string | ✅ | — | pattern: `^\d+\.\d+\.\d+$` | Spec version this file targets (e.g. `"1.2.0"`). |
+| `author` | string | ✅ | — | pattern: `^@[A-Za-z0-9_]{1,50}$` | X handle of the registry maintainer, prefixed with `@`. |
+| `compatibility` | string[] | ✅ | — | minItems: 1; uniqueItems | Platform specs this file is compatible with. |
+| `tools` | object | ✅ | — | minProperties: 1; key pattern: `^[a-z][a-z0-9_]{1,63}$` | Map of tool identifiers to formal contracts. |
 
-## Category enum
+---
+
+## Tool Definition Object
+
+### Example
+
+```yaml
+tools:
+  read_file:
+    category: filesystem
+    description: "Read the contents of a single file by repo-relative path."
+    parameters:
+      type: object
+      properties:
+        path:
+          type: string
+          pattern: "^(?!.*\\.\\.)[^/].*$"   # path traversal guard
+        encoding:
+          type: string
+          enum: ["utf-8", "binary", "base64"]
+          default: "utf-8"
+      required: [path]
+    returns:
+      type: object
+      properties:
+        content: { type: string }
+        size_bytes: { type: integer }
+    errors:
+      - { code: "NOT_FOUND", message: "No file exists at the given path." }
+      - { code: "PATH_TRAVERSAL", message: "Path escapes the repository root." }
+    security:
+      read_only: true
+      max_bytes: 10485760
+```
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `category` | string | ✅ | — | enum: `filesystem`, `shell`, `x_platform`, `github`, `web`, `memory`, `workflow` | Functional group. Determines which security keys are expected. |
+| `description` | string | ✅ | — | minLength: 10; maxLength: 500 | One-sentence explanation of what the tool does. |
+| `parameters` | object | ✅ | — | must have `type: object` | JSON Schema fragment defining the tool's inputs. |
+| `returns` | object | ✅ | — | must have `type: object` | JSON Schema fragment defining the success output shape. |
+| `errors` | array | — | `[]` | items: `{code, message}` | Explicit error vocabulary this tool may raise. |
+| `security` | object | ✅ | — | — | Safety constraints. Keys vary by category. |
+| `enabled` | boolean | — | `true` | — | Set `false` to disable the tool without removing its definition. |
+
+---
+
+## category Enum
 
 | Value | Purpose |
 |-------|---------|
-| `filesystem` | Scoped I/O against the repository working tree (read, write, list, search). |
+| `filesystem` | Scoped I/O against the repository working tree. |
 | `shell` | Arbitrary command execution. Always gated by `safety_profile` + explicit grant. |
-| `x_platform` | Posting to or reading from X. Writes require human approval and daily caps. |
-| `github` | GitHub API operations. Writes default to draft. |
-| `web` | Outbound HTTP. HTTPS only; SSRF guards are mandatory. |
+| `x_platform` | Posting to or reading from X. All writes require human approval. |
+| `github` | GitHub API operations. Writes default to draft PRs. |
+| `web` | Outbound HTTP. HTTPS only; SSRF guards mandatory. |
 | `memory` | Agent-scoped persistent state. No sensitive data. |
 | `workflow` | Composite transforms that orchestrate other tools. |
 
-## Parameter / return fragment keys
+---
 
-Both `parameters` and `returns` accept a JSON Schema fragment:
+## Parameters / Returns Fragment
+
+Both `parameters` and `returns` are JSON Schema fragments (draft-07 subset):
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `type` | `string` | `string`, `integer`, `number`, `boolean`, `array`, `object`, `null`. |
-| `description` | `string` | Human-readable explanation (max 500 chars). |
+| `type` | string | `string`, `integer`, `number`, `boolean`, `array`, `object`, `null`. |
+| `description` | string | Human-readable explanation (max 500 chars). |
 | `default` | any | Value used when the caller omits the parameter. |
-| `enum` | `any[]` | Restricts value to the listed options. |
-| `format` | `string` | `date-time`, `date`, `time`, `email`, `uri`, `uuid`, `ipv4`, `ipv6`. |
-| `pattern` | `string` | Regex the string value must match. |
-| `minimum` / `maximum` | `number` | Numeric range (inclusive). |
-| `minLength` / `maxLength` | `integer` | String length range. |
-| `minItems` / `maxItems` | `integer` | Array length range. |
-| `properties` | `object` | Map of field → nested fragment. |
-| `required` | `string[]` | Names of fields that must be present. |
-| `items` | `object` | Fragment describing array element type. |
+| `enum` | any[] | Restricts value to the listed options. |
+| `format` | string | `date-time`, `date`, `time`, `email`, `uri`, `uuid`, `ipv4`, `ipv6`. |
+| `pattern` | string | Regex the string value must match. |
+| `minimum` / `maximum` | number | Numeric range (inclusive). |
+| `minLength` / `maxLength` | integer | String length range. |
+| `minItems` / `maxItems` | integer | Array length range. |
+| `properties` | object | Map of field → nested fragment. |
+| `required` | string[] | Names of required fields (for `object` type). |
+| `items` | object | Fragment describing array element type. |
 
-## Errors array
+---
 
-Each entry is `{ code, message }`:
+## Errors Array
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `code` | `string` | Machine-readable identifier, `^[A-Z][A-Z0-9_]{1,63}$`. |
-| `message` | `string` | One-line explanation of when the error is raised (5–300 chars). |
+Each entry: `{ code, message }`
 
-Common codes: `NOT_FOUND`, `RATE_LIMIT`, `APPROVAL_MISSING`, `AUTH_REQUIRED`,
-`TIMED_OUT`, `PATH_TRAVERSAL`, `SSRF_BLOCKED`.
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| `code` | string | pattern: `^[A-Z][A-Z0-9_]{1,63}$` | Machine-readable UPPER_SNAKE_CASE error code. |
+| `message` | string | minLength: 5; maxLength: 300 | One-line explanation of when this error is raised. |
 
-## Security block keys
+Common codes: `NOT_FOUND`, `RATE_LIMIT`, `APPROVAL_MISSING`, `AUTH_REQUIRED`, `TIMED_OUT`, `PATH_TRAVERSAL`, `SSRF_BLOCKED`.
 
-The `security` block is intentionally permissive so new categories can add
-their own controls. Recognised keys:
+---
+
+## Security Block Keys
+
+The `security` block is open — new categories may add their own keys. Recognised keys:
 
 ### Common
 | Key | Type | Description |
 |-----|------|-------------|
-| `requires_auth` | `boolean` | Tool calls out to an authenticated service. |
-| `auth_provider` | `string` | `github`, `x_oauth2`, `google`, `slack`, `stripe`, `aws`, `gcp`, `azure`, `custom`. |
-| `read_only` | `boolean` | Tool cannot mutate state. |
-| `rate_limit` | `object` | `requests_per_minute` and/or `requests_per_day`. |
+| `requires_auth` | boolean | Tool calls out to an authenticated service. |
+| `auth_provider` | string | `github`, `x_oauth2`, `google`, `slack`, `aws`, `gcp`, `azure`, `custom`. |
+| `read_only` | boolean | Tool cannot mutate state. |
+| `rate_limit` | object | `requests_per_minute` (int) and/or `requests_per_day` (int). |
 
 ### filesystem
 | Key | Description |
 |-----|-------------|
-| `path_traversal_regex` | Regex used to reject `..` or absolute paths. |
+| `path_traversal_regex` | Regex rejecting `..` or absolute paths. |
 | `max_bytes` | Cap on bytes read or written per call. |
-| `no_symlink_follow` | Refuse to follow symlinks out of the tree. |
+| `no_symlink_follow` | Refuse to follow symlinks out of the repo tree. |
 | `overwrite_default` | Default value for the `overwrite` parameter. |
-| `respects_gitignore` | Search tool skips paths matched by `.gitignore`. |
-| `scoped_to_repo` | All paths are interpreted relative to the repo root. |
+| `scoped_to_repo` | All paths interpreted relative to the repo root. |
 
 ### shell
 | Key | Description |
 |-----|-------------|
-| `requires_safety_profile` | List of `grok-config` `safety_profile` values that permit the tool. |
-| `requires_explicit` | Additional explicit grant string, e.g. `"shell_access: true"`. |
+| `requires_safety_profile` | List of allowed `grok-config` `safety_profile` values. |
+| `requires_explicit` | Additional grant string, e.g. `"shell_access: true"`. |
 | `sandbox` | Command runs inside an isolated sandbox. |
 | `network_isolated_by_default` | No outbound network unless explicitly enabled. |
 
 ### x_platform
 | Key | Description |
 |-----|-------------|
-| `approval_required` | A human must approve before the tool posts. |
-| `blocks_if_require_approval_false` | Refuses to run if the caller disables approval. |
-| `no_bulk_collection` | Search/read tools reject bulk scraping patterns. |
-| `own_tweets_only` | Metrics tools refuse to query accounts other than the authenticated user. |
+| `approval_required` | Human must approve before the tool writes to X. |
+| `blocks_if_require_approval_false` | Refuses to run if approval is disabled. |
+| `no_bulk_collection` | Search/read tools reject bulk scraping. |
+| `own_tweets_only` | Metrics tools refuse to query other accounts. |
 
 ### github
 | Key | Description |
 |-----|-------------|
-| `draft_default` | New PRs open as draft unless explicitly set otherwise. |
+| `draft_default` | New PRs open as draft unless explicitly overridden. |
 | `owner_pattern` | Regex validating the `owner` parameter. |
 | `repo_pattern` | Regex validating the `repo` parameter. |
 
 ### web
 | Key | Description |
 |-----|-------------|
-| `https_only` | Only `https://` URLs are accepted. |
-| `ssrf_protection` | Resolve URLs and reject blocked ranges before fetching. |
-| `blocked_ranges` | CIDR list of disallowed address ranges (RFC1918, loopback, link-local, ULA). |
-| `uses_grok_builtin` | Delegates to Grok's built-in web search. |
+| `https_only` | Only `https://` URLs accepted. |
+| `ssrf_protection` | Resolve URLs and reject blocked address ranges. |
+| `blocked_ranges` | CIDR list of disallowed ranges (RFC1918, loopback, link-local). |
 
 ### memory
 | Key | Description |
 |-----|-------------|
-| `no_sensitive_data_warning` | Registry warns callers not to store PII/secrets. |
+| `no_sensitive_data_warning` | Registry warns callers not to store PII or secrets. |
 | `scope` | `agent`, `workspace`, or `global`. |
 | `encrypted_at_rest` | Memory entries are encrypted on disk. |
 
@@ -137,12 +178,10 @@ their own controls. Recognised keys:
 | `inherits_security_of_delegates` | Union of delegate security constraints applies. |
 | `pure_transform` | Tool performs computation only; no I/O or side effects. |
 
-## Cross-referencing
+---
 
-- `grok-agent.yaml` `tools:` entries must match keys in this registry.
-- `grok-workflow.yaml` step `action:` values that are not a spec name
-  (`grok-test`, `grok-docs`, …) must match keys here.
+## Cross-Referencing
+
+- `grok-agent.yaml` `tools:` arrays must contain keys defined in this registry.
+- `grok-workflow.yaml` step `action:` values that are not spec names must match registry keys.
 - `grok-update.yaml` `actions:` that invoke tools resolve against this registry.
-
-Unknown tool names should fail validation in CI — keep the registry as the
-single source of truth.

@@ -1,64 +1,156 @@
-# grok-ui.yaml Field Reference
+# grok-ui.yaml — Complete Field Reference
 
-## Top-level fields
+Version: 1.2.0
+JSON Schema: `schemas/grok-ui.json`
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `version` | `string` | ✅ | Semver of this UI config file (e.g. `"1.0.0"`). |
-| `author` | `string` | ✅ | X handle prefixed with `@`. |
-| `compatibility` | `string[]` | ✅ | Spec identifiers this file is compatible with. |
-| `ui` | `object` | ✅ | Top-level UI configuration. |
+---
 
-## ui fields
+## Root Object
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `theme` | `string` | — | UI colour theme: `dark`, `light`, `system`, `high-contrast`. Defaults to `system`. |
-| `locale` | `string` | — | BCP-47 locale code for the UI (e.g. `en-US`, `fr-FR`). Defaults to `en-US`. |
-| `voice_commands` | `object` | — | Voice command configuration (see below). |
-| `dashboard` | `object` | — | Dashboard widget configuration (see below). |
-| `shortcuts` | `object` | — | Keyboard shortcut bindings (see below). |
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `version` | string | ✅ | — | pattern: `^\d+\.\d+\.\d+$` | Spec version this file targets (e.g. `"1.2.0"`). |
+| `author` | string | ✅ | — | pattern: `^@[A-Za-z0-9_]{1,50}$` | X handle of the config owner, prefixed with `@`. |
+| `compatibility` | string[] | ✅ | — | minItems: 1; uniqueItems | Platform specs this file is compatible with. |
+| `ui` | object | ✅ | — | — | Top-level UI personalisation and extension settings. |
 
-## voice_commands fields
+---
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `enabled` | `boolean` | ✅ | Activate voice command listening. Requires microphone permission. |
-| `language` | `string` | — | BCP-47 language code for speech recognition (e.g. `en-US`). |
-| `wake_phrase` | `string` | — | Phrase that activates listening (e.g. `"hey grok"`). Case-insensitive. |
-| `commands` | `object[]` | — | List of voice command definitions (see below). |
+## UI Object
 
-## Voice command item fields
+### Example
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `phrase` | `string` | ✅ | Spoken phrase that triggers the command (after the wake phrase). |
-| `action` | `string` | ✅ | Grok spec or action to execute (e.g. `grok-test`, `grok-deploy`). |
-| `suite` / `target` / `scan` / `command` | `string` | — | Action-specific argument matching the corresponding spec's identifier key. |
+```yaml
+ui:
+  theme: "dark"
+  locale: "en-US"
+  voice_commands:
+    enabled: false      # requires explicit opt-in; triggers microphone permission prompt
+  dashboard:
+    enabled: true
+    refresh_seconds: 30
+  shortcuts:
+    keyboard:
+      - key: "ctrl+shift+t"
+        action: "grok-test"
+        description: "Run all test suites"
+```
 
-## dashboard fields
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `theme` | string | — | `"system"` | enum: `dark`, `light`, `system`, `high-contrast` | Colour theme for the Grok IDE extension and dashboard. |
+| `locale` | string | — | `"en-US"` | pattern: `^[a-z]{2}(-[A-Z]{2,4})?$` (BCP-47) | Locale for UI text and number formatting. |
+| `voice_commands` | object | — | — | — | Voice command configuration. See [Voice Commands Object](#voice-commands-object). |
+| `dashboard` | object | — | — | — | Live dashboard configuration. See [Dashboard Object](#dashboard-object). |
+| `shortcuts` | object | — | — | — | Keyboard shortcut bindings. See [Shortcuts Object](#shortcuts-object). |
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `enabled` | `boolean` | ✅ | Show the Grok dashboard panel. |
-| `refresh_seconds` | `integer` | — | Default data refresh interval for all widgets (seconds). |
-| `widgets` | `object[]` | — | Ordered list of dashboard widget definitions (see below). |
+---
 
-## Widget definition fields
+## Voice Commands Object
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `type` | `string` | ✅ | Widget type: `agent_status`, `test_results`, `deployment_history`, `security_summary`, `analytics_pulse`, `custom`. |
-| `title` | `string` | — | Display title shown in the widget header. |
-| `refresh_seconds` | `integer` | — | Per-widget refresh override. |
-| `show_last_n` | `integer` | — | Number of most recent items to display. |
-| `suite` / `target` / `alert_level` / `time_window_hours` | various | — | Widget-type-specific filter or configuration fields. |
+### Example
 
-## shortcuts.keyboard item fields
+```yaml
+ui:
+  voice_commands:
+    enabled: true             # triggers microphone permission prompt
+    language: "en-US"
+    wake_phrase: "hey grok"
+    commands:
+      - phrase: "run tests"
+        action: "grok-test"
+      - phrase: "deploy staging"
+        action: "grok-deploy"
+        target: "staging"
+```
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `key` | `string` | ✅ | Key combination (e.g. `ctrl+shift+g`, `cmd+k`). |
-| `action` | `string` | ✅ | Grok action or spec to invoke. |
-| `description` | `string` | — | Human-readable description shown in the shortcut help panel. |
-| Additional fields | various | — | Action-specific arguments (e.g. `suite`, `target`, `scan`). |
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `enabled` | boolean | ✅ | `false` | — | Activate voice command listening. Requires explicit opt-in (triggers microphone permission). |
+| `language` | string | — | `"en-US"` | pattern: `^[a-z]{2}(-[A-Z]{2,4})?$` | BCP-47 code for speech recognition. |
+| `wake_phrase` | string | — | `"hey grok"` | minLength: 2; maxLength: 50 | Phrase that activates the listener. Case-insensitive. |
+| `commands` | array | — | `[]` | — | Voice command bindings. See [Voice Command Item](#voice-command-item). |
+
+---
+
+## Voice Command Item
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `phrase` | string | ✅ | — | minLength: 2; maxLength: 100 | Spoken phrase (after the wake phrase) that triggers this command. |
+| `action` | string | ✅ | — | enum: `grok-test`, `grok-deploy`, `grok-security`, `grok-docs`, `grok-workflow`, `grok-agent`, `grok-update`, `grok-prompts`, `grok-ui` | Grok spec or built-in action to execute. |
+| `suite` | string | — | — | test suite identifier | Test suite filter when `action: grok-test`. |
+| `target` | string | — | — | deploy or docs target | Target identifier when `action: grok-deploy` or `grok-docs`. |
+| `scan` | string | — | — | security scan identifier | Scan identifier when `action: grok-security`. |
+| `command` | string | — | — | — | Sub-command for built-in UI actions. |
+
+---
+
+## Dashboard Object
+
+### Example
+
+```yaml
+ui:
+  dashboard:
+    enabled: true
+    refresh_seconds: 30      # global default; can be overridden per widget
+    widgets:
+      - type: "test_results"
+        title: "Latest Test Run"
+        show_last_n: 5
+      - type: "security_summary"
+        title: "Security Alerts"
+        alert_level: "high"    # filter to high and critical only
+      - type: "deployment_history"
+        target: "production"
+        show_last_n: 10
+```
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `enabled` | boolean | ✅ | `false` | — | Show the Grok dashboard panel in the IDE extension. |
+| `refresh_seconds` | integer | — | `30` | minimum: 5; maximum: 3600 | Default data refresh interval for all widgets. |
+| `widgets` | array | — | `[]` | — | Ordered list of widgets displayed top-to-bottom. See [Widget Item](#widget-item). |
+
+---
+
+## Widget Item
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `type` | string | ✅ | — | enum: `agent_status`, `test_results`, `deployment_history`, `security_summary`, `analytics_pulse`, `custom` | Widget type determining what data is fetched and rendered. |
+| `title` | string | — | — | maxLength: 100 | Display title in the widget header. |
+| `refresh_seconds` | integer | — | — | minimum: 5; maximum: 3600 | Per-widget refresh interval override. |
+| `show_last_n` | integer | — | — | minimum: 1; maximum: 100 | Number of most recent items to display in list widgets. |
+| `suite` | string | — | — | test suite identifier | Filter for `test_results` widgets. |
+| `target` | string | — | — | deploy target identifier | Filter for `deployment_history` widgets. |
+| `alert_level` | string | — | `"info"` | enum: `info`, `warning`, `high`, `critical` | Minimum severity shown in `security_summary` widgets. |
+| `time_window_hours` | integer | — | `24` | minimum: 1; maximum: 8760 | Time window for `analytics_pulse` widgets. |
+
+---
+
+## Shortcuts Object
+
+### Example
+
+```yaml
+ui:
+  shortcuts:
+    keyboard:
+      - key: "ctrl+shift+t"
+        action: "grok-test"
+        description: "Run all test suites"
+      - key: "ctrl+shift+d"
+        action: "grok-docs"
+        target: "AutoREADME"
+        description: "Regenerate README"
+```
+
+### Keyboard Shortcut Item
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `key` | string | ✅ | — | pattern: `^(ctrl\|cmd\|alt\|shift\|meta)(\+(ctrl\|cmd\|alt\|shift\|meta\|[a-z0-9]))+$`; maxLength: 50 | Key combination. Use `ctrl` for Win/Linux, `cmd` for macOS. |
+| `action` | string | ✅ | — | minLength: 1; maxLength: 100 | Grok spec or action to invoke. Approval gates on target actions are never bypassed. |
+| `description` | string | — | — | maxLength: 200 | Human-readable description shown in the shortcut help panel. |

@@ -1,50 +1,59 @@
-# grok-docs.yaml Field Reference
+# grok-docs.yaml — Complete Field Reference
 
-Full JSON Schema: [`/schemas/grok-docs.json`](../schemas/grok-docs.json)
-
----
-
-## Top-level fields
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `version` | `string` | ✅ | Semver of this docs config file (e.g. `"1.2.0"`). |
-| `author` | `string` | ✅ | X handle of the config owner, prefixed with `@`. |
-| `compatibility` | `string[]` | ✅ | Spec identifiers this file is compatible with. |
-| `docs` | `object` | ✅ | Named documentation target definitions. At least one entry required. |
+Version: 1.2.0
+JSON Schema: `schemas/grok-docs.json`
 
 ---
 
-## docs entries
+## Root Object
 
-Each key becomes the target identifier used in `@grok docs <Name>` triggers.
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `target` | `string` | ✅ | Output file path relative to repo root. Must end in `.md`, `.rst`, `.txt`, or `.html`. |
-| `sections` | `string[]` | ✅ | Ordered list of document sections to generate. At least one required. |
-| `style` | `string` | `"technical-clean"` | Writing style preset applied to the entire document. |
-| `update_on` | `string[]` | — | Events that trigger automatic regeneration. |
-| `include_code_samples` | `boolean` | `false` | Include fenced code examples in API reference and quickstart sections. |
-| `source_files` | `string[]` | — | Glob patterns selecting source files Grok analyses. Defaults to entire repo. |
-| `language` | `string` | `"en"` | BCP-47 language tag for the output (e.g. `"en"`, `"fr"`, `"de"`). |
-| `table_of_contents` | `boolean` | `false` | Prepend an auto-generated table of contents. |
-| `max_length_words` | `integer` | — | Soft word-count limit. Range: `100` – `50000`. |
-| `enabled` | `boolean` | `true` | Set to `false` to disable without removing the definition. |
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `version` | string | ✅ | — | pattern: `^\d+\.\d+\.\d+$` | Spec version this file targets (e.g. `"1.2.0"`). |
+| `author` | string | ✅ | — | pattern: `^@[A-Za-z0-9_]{1,50}$` | X handle of the config owner, prefixed with `@`. |
+| `compatibility` | string[] | ✅ | — | minItems: 1; uniqueItems | Platform specs this file is compatible with. |
+| `docs` | object | ✅ | — | minProperties: 1 | Named documentation target definitions. Each key is a target ID used in `@grok docs <Name>`. |
 
 ---
 
-## target filename pattern
+## Docs Target Object
 
-`^[a-zA-Z0-9_./-]+\.(md|rst|txt|html)$`
+### Example
 
-**Valid examples:** `README.md` · `docs/API.md` · `docs/guide.rst` · `public/index.html`
+```yaml
+docs:
+  AutoREADME:
+    target: "README.md"             # must end in .md, .rst, .txt, or .html
+    sections: ["hero", "features", "installation", "quickstart", "magic_triggers"]
+    style: "exciting-professional"
+    source_files: ["src/**/*.ts", "*.json"]   # explicit scope — never include .env
+    include_code_samples: true
+    update_on: ["pr_merged", "release"]       # never "push" for public-facing docs
+    language: "en"
+    table_of_contents: true
+    max_length_words: 2000
+```
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `target` | string | ✅ | — | pattern: `^[a-zA-Z0-9_./-]+\.(md\|rst\|txt\|html)$` | Output file path relative to repo root. Must end in a supported extension. |
+| `sections` | string[] | ✅ | — | minItems: 1; enum items below | Ordered doc sections to generate. Composed top-to-bottom. |
+| `style` | string | — | `"technical-clean"` | enum: `technical-clean`, `exciting-professional`, `minimal`, `comprehensive`, `tutorial`, `reference` | Writing style applied to the entire document. |
+| `source_files` | string[] | — | `["**/*"]` | glob patterns | Files Grok analyses. Explicitly list source dirs; exclude `.env`, secrets, credentials. |
+| `exclude_patterns` | string[] | — | `[]` | glob patterns | Files excluded even when matched by `source_files`. |
+| `include_code_samples` | boolean | — | `false` | — | Include fenced code examples. Review auto-generated samples for hardcoded values before publish. |
+| `include_diagrams` | boolean | — | `false` | — | Generate Mermaid diagrams for architecture and flow sections. |
+| `update_on` | string[] | — | `["manual"]` | enum items: `push`, `pr_merged`, `release`, `manual`, `schedule`, `on_tag` | Events that trigger automatic regeneration. Avoid `push` for public-facing docs. |
+| `language` | string | — | `"en"` | pattern: `^[a-z]{2}(-[A-Z]{2,4})?$` (BCP-47) | Output language. |
+| `table_of_contents` | boolean | — | `false` | — | Prepend an auto-generated table of contents. |
+| `max_length_words` | integer | — | — | minimum: 100; maximum: 50000 | Soft word-count limit for the generated document. |
+| `enabled` | boolean | — | `true` | — | Set `false` to disable this target without removing its definition. |
 
 ---
 
-## sections enum values
+## sections Enum
 
-Sections are composed top-to-bottom in the order listed:
+Sections are composed top-to-bottom in the order declared:
 
 | Value | Generates |
 |-------|-----------|
@@ -53,12 +62,12 @@ Sections are composed top-to-bottom in the order listed:
 | `installation` | Step-by-step install instructions |
 | `quickstart` | Minimal working example |
 | `magic_triggers` | `@grok` trigger reference table |
-| `configuration` | All config options with defaults |
+| `configuration` | Config options with defaults |
 | `api_reference` | Full API method/endpoint listing |
 | `examples` | Extended code examples |
 | `auth` | Authentication and authorisation guide |
 | `endpoints` | REST/GraphQL endpoint listing |
-| `changelog` | Version history |
+| `changelog` | Version history (review before publishing — may contain internal ticket numbers) |
 | `contributing` | Contribution guidelines |
 | `license` | License summary |
 | `faq` | Frequently asked questions |
@@ -69,7 +78,7 @@ Sections are composed top-to-bottom in the order listed:
 
 ---
 
-## style enum values
+## style Enum
 
 | Value | Tone |
 |-------|------|
@@ -82,6 +91,13 @@ Sections are composed top-to-bottom in the order listed:
 
 ---
 
-## update_on enum values
+## update_on Enum
 
-`push` · `pr_merged` · `release` · `manual` · `schedule` · `on_tag`
+| Value | Trigger |
+|-------|---------|
+| `push` | Every commit to the default branch. **Avoid for public-facing targets** — may expose WIP content. |
+| `pr_merged` | After a PR is merged. Recommended for public docs. |
+| `release` | After a GitHub release is published. |
+| `manual` | Only via `@grok docs <Name>` comment. Default. |
+| `schedule` | On a cron schedule configured in `grok-update.yaml`. |
+| `on_tag` | When a git tag is pushed. |

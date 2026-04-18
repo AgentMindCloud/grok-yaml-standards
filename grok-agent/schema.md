@@ -1,80 +1,110 @@
-# grok-agent.yaml Field Reference
+# grok-agent.yaml — Complete Field Reference
 
-Full JSON Schema: [`/schemas/grok-agent.json`](../schemas/grok-agent.json)
-
----
-
-## Top-level fields
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `version` | `string` | ✅ | Semver of this agent config file (e.g. `"1.2.0"`). |
-| `author` | `string` | ✅ | X handle of the config owner, prefixed with `@`. |
-| `compatibility` | `string[]` | ✅ | Spec identifiers this file is compatible with. |
-| `agents` | `object` | ✅ | Named agent definitions. At least one entry required. |
+Version: 1.2.0
+JSON Schema: `schemas/grok-agent.json`
 
 ---
 
-## agents entries
+## Root Object
 
-Each key becomes the agent identifier used in `@grok spawn agent:<Name>` triggers.
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `description` | `string` | ✅ | Purpose and domain expertise of this agent. Min 10 chars, max 500 chars. |
-| `tools` | `string[]` | — | Tool identifiers the agent is permitted to invoke. Cross-reference with `grok-tools.yaml`. |
-| `memory` | `string` | `"session_only"` | Memory persistence strategy across sessions. |
-| `max_turns_per_session` | `integer` | `50` | Back-and-forth turns allowed before the agent requires re-spawning. Range: `1` – `1000`. |
-| `auto_save_state` | `boolean` | `false` | Persist agent state after every session. Only meaningful with `memory: long_term`. |
-| `personality` | `string` | — | Agent-level personality override. Overrides `grok.personality` from `grok-config.yaml`. |
-| `system_prompt` | `string` | — | Custom system prompt prepended to every session. Min 10 chars, max 4000 chars. |
-| `permissions` | `string[]` | — | Explicit capability grants beyond standard read access. |
-| `rate_limit` | `object` | — | Per-agent request throttling. See below. |
-| `enabled` | `boolean` | `true` | Set to `false` to disable this agent without removing its definition. |
-
-**`memory` enum values:**
-`long_term` · `session_only` · `none`
-
-**`personality` enum values:**
-`helpful-maximalist` · `concise` · `creative` · `technical` · `balanced` · `socratic` · `executive`
-
-**`permissions` enum values:**
-`read` · `write` · `execute` · `network` · `publish` · `deploy` · `admin`
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `version` | string | ✅ | — | pattern: `^\d+\.\d+\.\d+$` | Spec version this file targets (e.g. `"1.2.0"`). |
+| `author` | string | ✅ | — | pattern: `^@[A-Za-z0-9_]{1,50}$` | X handle of the config owner, prefixed with `@`. |
+| `compatibility` | string[] | ✅ | — | minItems: 1; uniqueItems | Platform specs this file is compatible with. |
+| `agents` | object | ✅ | — | minProperties: 1 | Named agent definitions. Each key is an agent ID used in `@grok spawn agent:<Name>`. |
 
 ---
 
-## tools — known identifiers
+## Agent Definition Object
 
-The following tool identifiers are defined in `grok-tools.yaml` and available for assignment:
+### Example
 
-| Tool | Category | Description |
-|------|----------|-------------|
-| `read_file` | file_system | Read file contents from the repository |
-| `write_file` | file_system | Write or overwrite a file |
-| `list_files` | file_system | List files matching a glob pattern |
-| `delete_file` | file_system | Delete a file from the repository |
-| `run_command` | code | Execute a shell command and capture output |
-| `search_code` | code | Full-text and semantic code search |
-| `create_pr` | code | Open a GitHub pull request |
-| `create_branch` | code | Create a new git branch |
-| `merge_pr` | code | Merge an approved pull request |
-| `run_tests` | testing | Run the repository test suite |
-| `post_thread` | social | Post a thread of tweets to X |
-| `analyze_engagement` | social | Fetch engagement metrics for recent posts |
-| `reply_to_mentions` | social | Reply to X mentions |
-| `web_search` | web | Search the open web |
-| `web_fetch` | web | Fetch content from a URL |
-| `call_api` | data | Make an authenticated HTTP API call |
-| `read_database` | data | Execute a read query against a database |
-| `write_database` | data | Execute a write query against a database |
-| `deploy` | deployment | Trigger a deployment via `grok-deploy.yaml` |
-| `send_notification` | notification | Send a notification via a configured channel |
+```yaml
+agents:
+  CodePartner:
+    description: "Senior engineer agent with full read-write access to the repo."
+    tools:
+      - read_file
+      - write_file
+      - run_command    # high-risk: pairs with rate_limit below
+      - search_code
+      - create_pr
+    memory: "long_term"
+    max_turns_per_session: 100
+    auto_save_state: true
+    personality: "technical"
+    system_prompt: "You are a senior TypeScript engineer. Always explain trade-offs."
+    permissions: ["read", "write", "execute"]
+    rate_limit:
+      requests_per_minute: 60
+      requests_per_day: 1000
+```
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `description` | string | ✅ | — | minLength: 10; maxLength: 500 | Purpose and domain expertise of this agent. |
+| `tools` | string[] | — | `[]` | uniqueItems; each item: enum of registered tool IDs | Tool identifiers the agent may invoke. Cross-reference with `grok-tools.yaml`. |
+| `memory` | string | — | `"session_only"` | enum: `long_term`, `session_only`, `none` | Memory persistence across sessions. |
+| `max_turns_per_session` | integer | — | `50` | minimum: 1; maximum: 1000 | Back-and-forth turns before the agent requires re-spawning. |
+| `auto_save_state` | boolean | — | `false` | — | Persist agent state after every session. Only meaningful when `memory: long_term`. |
+| `personality` | string | — | — | enum: `helpful-maximalist`, `concise`, `creative`, `technical`, `balanced`, `socratic`, `executive` | Agent-level personality. Overrides `grok.personality` from `grok-config.yaml`. |
+| `system_prompt` | string | — | — | minLength: 10; maxLength: 4000 | Static system prompt prepended to every session. Never interpolate user input here. |
+| `permissions` | string[] | — | `[]` | uniqueItems; enum items: `read`, `write`, `execute`, `network`, `publish`, `deploy`, `admin` | Explicit capability grants beyond default read access. |
+| `rate_limit` | object | — | — | — | Per-agent request throttling. See [Rate Limit Object](#rate-limit-object). |
+| `enabled` | boolean | — | `true` | — | Set `false` to disable the agent without removing its definition. |
 
 ---
 
-## rate_limit object fields
+## Rate Limit Object
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `requests_per_minute` | `integer` | Maximum tool invocations per 60-second window. Range: `1` – `600`. |
-| `requests_per_day` | `integer` | Maximum tool invocations per calendar day. Range: `1` – `100000`. |
+### Example
+
+```yaml
+agents:
+  SocialManager:
+    rate_limit:
+      requests_per_minute: 10   # prevents accidental X spam in loops
+      requests_per_day: 200
+```
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `requests_per_minute` | integer | — | — | minimum: 1; maximum: 600 | Maximum tool invocations per 60-second window across all tools. |
+| `requests_per_day` | integer | — | — | minimum: 1; maximum: 100000 | Maximum total tool invocations per calendar day. |
+
+---
+
+## Tool Identifiers
+
+The following tools are defined in `grok-tools.yaml` v1.2.0 and available for agent assignment:
+
+| Tool | Category | Key Security Constraint |
+|------|----------|------------------------|
+| `read_file` | filesystem | path traversal regex enforced |
+| `write_file` | filesystem | `overwrite: false` by default |
+| `list_directory` | filesystem | scoped to repo root |
+| `search_code` | filesystem | read-only |
+| `run_command` | shell | requires `safety_profile: balanced` or `research` + explicit `shell_access: true` |
+| `post_thread` | x_platform | `approval_required: true`; 20/day cap |
+| `reply_to_mentions` | x_platform | `approval_required: true`; 50/day cap |
+| `search_x` | x_platform | read-only; `no_bulk_collection: true` |
+| `analyze_engagement` | x_platform | `own_tweets_only: true` |
+| `create_pr` | github | `draft_default: true` |
+| `fetch_repo` | github | read-only |
+| `web_search` | web | uses Grok built-in |
+| `fetch_url` | web | HTTPS only; SSRF protection |
+| `save_memory` | memory | `no_sensitive_data_warning: true` |
+| `recall_memory` | memory | agent-scoped |
+| `summarize_changes` | workflow | pure transform |
+| `publish_thread` | workflow | delegates to `summarize_changes` + `post_thread` |
+
+---
+
+## memory Enum
+
+| Value | Behaviour |
+|-------|-----------|
+| `long_term` | State persists across sessions on disk. Requires `auto_save_state: true` to write. |
+| `session_only` | State is cleared at the end of each session. Default. |
+| `none` | No memory; each turn is fully stateless. |

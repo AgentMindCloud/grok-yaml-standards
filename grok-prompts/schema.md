@@ -1,60 +1,93 @@
-# grok-prompts.yaml Field Reference
+# grok-prompts.yaml — Complete Field Reference
 
-Full JSON Schema: [`/schemas/grok-prompts.json`](../schemas/grok-prompts.json)
-
----
-
-## Top-level fields
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `version` | `string` | ✅ | Semver of this prompt library file (e.g. `"1.2.0"`). |
-| `author` | `string` | ✅ | X handle of the library maintainer, prefixed with `@`. |
-| `compatibility` | `string[]` | ✅ | Spec identifiers this file is compatible with. |
-| `prompt_library` | `object` | ✅ | Named prompt definitions. At least one entry required. |
+Version: 1.2.0
+JSON Schema: `schemas/grok-prompts.json`
 
 ---
 
-## prompt_library entries
+## Root Object
 
-Each key becomes the prompt identifier used in `@grok use prompts:<id>` triggers.
-
-**Key format**: snake_case recommended (e.g. `viral_thread`, `code_review`).
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `template` | `string` | ✅ | The prompt text. Use `{variable_name}` placeholders for runtime interpolation. Min 10 chars, max 8000 chars. |
-| `description` | `string` | — | Human-readable explanation of when to use this prompt. Max 500 chars. |
-| `variables` | `string[]` | — | Required variable names that must be supplied at invocation. Must match `{placeholders}` in the template. |
-| `optional_variables` | `string[]` | — | Variable names that enrich the prompt when supplied but are not mandatory. |
-| `temperature` | `number` | — | Per-prompt sampling temperature override. Range: `0` – `2`. Overrides `grok.temperature`. |
-| `max_tokens` | `integer` | — | Per-prompt token cap override. Range: `1` – `131072`. |
-| `model` | `string` | — | Per-prompt model override. Useful when this prompt needs a specific capability. |
-| `tags` | `string[]` | — | Categorisation tags for filtering and discovery (e.g. `social`, `code`, `marketing`). Pattern: `^[a-z0-9_-]+$`. |
-| `output_format` | `string` | — | Expected output structure. See enum values below. |
-| `cache_responses` | `boolean` | `false` | Cache the response for identical variable combinations to reduce latency. |
-
-**`model` enum values:**
-`grok-4` · `grok-3` · `grok-3-mini` · `grok-3-fast` · `grok-2` · `grok-1`
-
-**`output_format` enum values:**
-`plain` · `markdown` · `json` · `yaml` · `thread` · `bullet_list` · `table`
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `version` | string | ✅ | — | pattern: `^\d+\.\d+\.\d+$` | Spec version this file targets (e.g. `"1.2.0"`). |
+| `author` | string | ✅ | — | pattern: `^@[A-Za-z0-9_]{1,50}$` | X handle of the library maintainer, prefixed with `@`. |
+| `compatibility` | string[] | ✅ | — | minItems: 1; uniqueItems | Platform specs this file is compatible with. |
+| `prompt_library` | object | ✅ | — | minProperties: 1; key pattern: `^[a-z_][a-z0-9_]*$` | Named prompt definitions. Each key is a prompt ID used in `@grok use prompts:<id>`. |
 
 ---
 
-## Variable placeholder syntax
+## Prompt Entry Object
+
+Each key in `prompt_library` maps to a prompt entry. Invoke with `@grok use prompts:<key>`.
+
+### Example
+
+```yaml
+prompt_library:
+  viral_thread:
+    description: "Turns any topic into a punchy 8-tweet X thread."
+    template: |
+      Write an 8-tweet thread about {topic}.
+      Tone: {tone}. Start with a strong hook. End with a call to action.
+      Each tweet must be under 280 characters.
+    variables: ["topic", "tone"]
+    optional_variables: ["audience"]
+    output_format: "thread"
+    temperature: 0.85      # creative output benefits from higher temperature
+    cache_responses: false # threads should always be freshly generated
+    tags: ["social", "content", "x-native"]
+```
+
+| Field | Type | Required | Default | Constraints | Description |
+|-------|------|----------|---------|-------------|-------------|
+| `description` | string | — | — | maxLength: 500 | Human-readable explanation of this prompt's purpose. |
+| `template` | string | ✅ | — | minLength: 10; maxLength: 8000 | The prompt text. Use `{variable_name}` for runtime interpolation. |
+| `variables` | string[] | — | `[]` | each item pattern: `^[a-z_][a-z0-9_]*$` | Required variables. Must appear as `{name}` in `template`. Runtime fails if any are missing. |
+| `optional_variables` | string[] | — | `[]` | same pattern as `variables` | Optional enrichment variables. Prompt renders without them if not supplied. |
+| `output_format` | string | — | `"plain"` | enum: `plain`, `markdown`, `json`, `yaml`, `thread`, `bullet_list`, `table` | Expected output structure hint. |
+| `temperature` | number | — | `0.7` | minimum: 0; maximum: 2 | Per-prompt sampling temperature. Overrides `grok.temperature`. `0` = deterministic. |
+| `max_tokens` | integer | — | — | minimum: 1; maximum: 131072 | Per-prompt token cap. Overrides `grok.max_tokens`. |
+| `model` | string | — | — | enum: `grok-4`, `grok-3`, `grok-3-mini`, `grok-3-fast`, `grok-2`, `grok-1` | Per-prompt model override for capability-specific prompts. |
+| `cache_responses` | boolean | — | `false` | — | Cache response for identical variable combinations. Avoid for time-sensitive or security prompts. |
+| `tags` | string[] | — | `[]` | maxItems: 10; each pattern: `^[a-z0-9_-]{1,50}$` | Categorisation tags for discovery and filtering. |
+
+---
+
+## Variable Placeholder Syntax
 
 Variables in `template` use curly-brace syntax: `{variable_name}`.
 
-- Variable names must match the pattern `^[a-z_][a-z0-9_]*$`
-- All names listed in `variables` must appear as `{name}` in the template
-- Names in `optional_variables` may or may not appear in the template
+Rules:
+- Variable names: pattern `^[a-z_][a-z0-9_]*$`
+- All names in `variables` must appear as `{name}` in the template
+- Names in `optional_variables` may or may not appear
+- Never interpolate raw user input directly into a `system:` block (see `security-considerations.md`)
 
-**Example:**
+### Example
+
 ```yaml
-viral_thread:
-  template: "Write a thread about {topic}. Tone: {tone}."
-  variables: ["topic", "tone"]
-  temperature: 0.85
-  output_format: "thread"
+code_review:
+  template: |
+    Review the following {language} code for {focus_area}.
+    Severity scale: critical / high / medium / low.
+    Code:
+    {code_snippet}
+  variables: ["language", "focus_area", "code_snippet"]
+  output_format: "markdown"
+  temperature: 0.1    # low temperature for deterministic security reviews
+  tags: ["code", "security", "review"]
 ```
+
+---
+
+## output_format Enum
+
+| Value | Description |
+|-------|-------------|
+| `plain` | Unstructured prose. |
+| `markdown` | GitHub-flavoured markdown. |
+| `json` | JSON object or array. |
+| `yaml` | YAML document. |
+| `thread` | Ordered list of tweets, each under 280 chars. |
+| `bullet_list` | Unordered bullet list. |
+| `table` | Markdown table with headers. |
