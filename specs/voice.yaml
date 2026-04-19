@@ -1,7 +1,7 @@
-# .grok/grok-voice.yaml
+# specs/voice.yaml
 # Compatible with: grok-install.yaml@1.0+, grok@2026.4+, grok-yaml-standards@2.0+
 version: "2.0.0"
-author: "@JanSol0s"
+author: "@yourhandle"
 compatibility:
   - "grok-install.yaml@1.0+"
   - "grok@2026.4+"

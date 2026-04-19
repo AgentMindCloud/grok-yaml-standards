@@ -31,6 +31,13 @@ the standards set from 12 to 14.
     input, output, the STT → intent → agent → TTS pipeline,
     latency budget, fallback, and explicit audio/transcript
     privacy controls
+- `specs/swarm.yaml` and `specs/voice.yaml` — additional copies of
+  the two new specs under the ecosystem-standard `specs/` path,
+  for downstream tools that expect that layout. Kept alongside the
+  existing `grok-<name>/` and `.grok/` structure — nothing removed.
+- `VERSION` — canonical single-line version file at repo root
+  (`2.0.0`). Mirrors the ecosystem convention and gives CI a stable
+  file to read.
 - `CHANGELOG.md` — this file.
 - `DISCLAIMER.md` — canonical "not affiliated with xAI, Grok, or X"
   disclaimer, mirrored verbatim from `grok-install-brand`.
@@ -44,6 +51,9 @@ the standards set from 12 to 14.
   `grok-voice` alongside the existing twelve.
 - **Repo version v1.2 → v2.0**. Every per-spec `version:` field in
   `.grok/*.yaml` and `grok-*/example.yaml` bumped to `"2.0.0"`.
+  Nested `swarm.version` and `voice.version` fields inside the new
+  specs also set to `"2.0.0"` so the definition-level semver aligns
+  with the file-level semver on first release.
 - **Compatibility strings** bumped from `grok-yaml-standards@1.1+`
   and `@1.2+` to `grok-yaml-standards@2.0+` across all per-spec
   YAML files and README compatibility lines.

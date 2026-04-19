@@ -10,7 +10,7 @@ compatibility:
 swarm:
   id: "ship-it-swarm"
   name: "Ship It Swarm"
-  version: "1.0.0"
+  version: "2.0.0"
   description: "Coordinated multi-agent swarm that turns an approved PR into a shipped release."
 
   members:
