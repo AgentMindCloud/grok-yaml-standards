@@ -8,7 +8,7 @@ Interacting with Grok requires typing @grok commands in text fields. `grok-ui.ya
 `@grok ui reload` — reloads the UI config from `.grok/grok-ui.yaml` without restarting
 
 **Compatible with**  
-`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@1.2+`
+`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@2.0+`
 
 **Benefits**  
 - Voice commands enable hands-free Grok invocation during coding sessions  

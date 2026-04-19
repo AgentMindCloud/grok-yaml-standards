@@ -8,7 +8,7 @@ Agents and workflows reference tools by name but have no formal contract for wha
 `@grok tools inspect read_file` — shows the full schema for a specific tool
 
 **Compatible with**  
-`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@1.2+`
+`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@2.0+`
 
 **Benefits**  
 - Single source of truth for every tool used across `grok-agent.yaml` and `grok-workflow.yaml`  
