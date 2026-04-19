@@ -8,7 +8,7 @@ Grok usage telemetry is either all-or-nothing: either you share everything with 
 `@grok analytics reset` — clears locally cached analytics data
 
 **Compatible with**  
-`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@1.2+`
+`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@2.0+`
 
 **Benefits**  
 - Opt-in by default — no data leaves the repo unless `enabled: true` is set explicitly  

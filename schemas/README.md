@@ -1,6 +1,6 @@
 # schemas/ — JSON Schema Validation
 
-This folder contains official JSON Schema files (draft-07) for **all 12 grok-yaml-standards specs**.
+This folder contains official JSON Schema files (draft-07) for **all 14 grok-yaml-standards specs**.
 
 Every schema is a complete, property-level contract with:
 - Typed and described fields at every nesting level
@@ -32,6 +32,8 @@ Every schema is a complete, property-level contract with:
 | `grok-deploy.json` | Deploy targets, env vars, resource limits, health checks |
 | `grok-analytics.json` | Events, PII safety, provider config, sampling rate |
 | `grok-ui.json` | Voice commands, dashboard widgets, keyboard shortcuts, themes |
+| `grok-swarm.json` | Swarm members, roles, coordinator, communication, consensus, fallback |
+| `grok-voice.json` | Voice pipeline (STT → intent → agent → TTS), latency budget, privacy controls |
 
 ## Using schemas in your IDE
 
@@ -50,9 +52,11 @@ Every schema is a complete, property-level contract with:
     "./schemas/grok-tools.json": ".grok/grok-tools.yaml",
     "./schemas/grok-deploy.json": ".grok/grok-deploy.yaml",
     "./schemas/grok-analytics.json": ".grok/grok-analytics.yaml",
-    "./schemas/grok-ui.json": ".grok/grok-ui.yaml"
+    "./schemas/grok-ui.json": ".grok/grok-ui.yaml",
+    "./schemas/grok-swarm.json": ".grok/grok-swarm.yaml",
+    "./schemas/grok-voice.json": ".grok/grok-voice.yaml"
   }
 }
 ```
 
-**Version:** 1.2.0 · Forward-compatible with `grok-install.yaml@1.0+`
+**Version:** 2.0.0 · Forward-compatible with `grok-install.yaml@1.0+`

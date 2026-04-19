@@ -8,7 +8,7 @@ Deployment configuration lives scattered across CI scripts, hosting dashboards, 
 `@grok deploy production` — deploys to production (requires approval when `require_approval: true`)
 
 **Compatible with**  
-`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@1.2+`
+`grok-install.yaml@1.0+` · `grok@2026.4+` · `grok-yaml-standards@2.0+`
 
 **Benefits**  
 - Zero-config deployments: define once, trigger from any issue or PR comment  
