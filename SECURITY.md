@@ -1,10 +1,3 @@
-<!--
-  TODO(maintainer): Before making this repo rely on this policy, replace the
-  placeholder email `security@agentmindcloud.dev` and the SLA numbers below
-  with real values you can commit to. An unmonitored mailbox is worse than
-  no SECURITY.md at all.
--->
-
 # Security Policy
 
 `grok-yaml-standards` is a reference library of YAML specifications and JSON Schemas. This document describes what is in scope, how to report a vulnerability, and what to expect in response.
@@ -41,15 +34,19 @@ This repository ships three categories of artifact. The threat model differs for
 
 **Please do not open a public GitHub issue for security reports.**
 
-Email: **security@agentmindcloud.dev**
+Use **GitHub's Private Vulnerability Reporting** for this repository:
 
-Include:
+1. Go to <https://github.com/AgentMindCloud/grok-yaml-standards/security/advisories/new>
+2. Fill in a title, description, affected artifact, and (if you have one) a proof of concept.
+3. Submit. Only repository maintainers will see it.
+
+If you have never used this feature before, GitHub's own guide is here: <https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability>.
+
+Please include in your report:
 - A clear description of the issue and the artifact affected (schema filename, workflow path, or sample YAML path).
 - Steps to reproduce, a proof-of-concept, or a concrete attack scenario.
 - Your assessment of severity and impact.
 - Whether you would like public credit in the advisory.
-
-PGP is available on request; ask in your first email and we will reply with a public key.
 
 ## Disclosure SLA
 
@@ -60,7 +57,7 @@ PGP is available on request; ask in your first email and we will reply with a pu
 | Fix or mitigation    | Within 30 days for high/critical; 90 days otherwise |
 | Public advisory      | Coordinated with reporter after fix ships |
 
-We follow a coordinated-disclosure model. We will credit reporters in the release notes and the GitHub Security Advisory unless they request anonymity.
+We follow a coordinated-disclosure model. We will credit reporters in the release notes and the published GitHub Security Advisory unless they request anonymity.
 
 ## Hardening Guidance for Consumers
 
