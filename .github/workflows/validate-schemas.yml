@@ -1,0 +1,124 @@
+# .github/workflows/validate-schemas.yml
+#
+# Validates:
+#   1. Every YAML under .grok/ and grok-*/example.yaml passes yamllint.
+#   2. Every `.grok/grok-<name>.yaml` and `grok-<name>/example.yaml` validates
+#      against `schemas/grok-<name>.json` using ajv-cli (JSON Schema Draft 7).
+#   3. Every `schemas/*.json` is well-formed JSON and declares $id / title / description.
+#
+# This workflow is intentionally NOT marked as a required check at first.
+# Promote it to required in branch-protection once it has passed green on
+# two or three real PRs.
+
+name: validate-schemas
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel a running validation if the branch is pushed again.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  yamllint:
+    name: yamllint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install yamllint
+        run: pip install 'yamllint==1.35.1'
+
+      - name: Lint YAML
+        run: |
+          yamllint -c .yamllint .grok grok-*/example.yaml
+
+  schema-smoke:
+    name: schema smoke check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify every schema has $id, title, description
+        run: |
+          set -euo pipefail
+          fail=0
+          for f in schemas/*.json; do
+            for field in '$id' title description; do
+              if ! jq -e --arg k "$field" 'has($k)' "$f" >/dev/null; then
+                echo "::error file=$f::missing required top-level field '$field'"
+                fail=1
+              fi
+            done
+            if ! jq -e '."$schema" == "http://json-schema.org/draft-07/schema#"' "$f" >/dev/null; then
+              echo "::error file=$f::\$schema is not JSON Schema Draft 7"
+              fail=1
+            fi
+          done
+          exit $fail
+
+  ajv-validate:
+    name: ajv (${{ matrix.standard }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        standard:
+          - grok-config
+          - grok-prompts
+          - grok-agent
+          - grok-workflow
+          - grok-update
+          - grok-test
+          - grok-docs
+          - grok-security
+          - grok-tools
+          - grok-deploy
+          - grok-analytics
+          - grok-ui
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install ajv-cli + yaml loader
+        run: npm install --no-save ajv-cli@5.0.0 js-yaml@4.1.0
+
+      - name: Validate .grok/${{ matrix.standard }}.yaml
+        run: |
+          npx ajv validate \
+            --spec=draft7 \
+            --all-errors \
+            --strict=false \
+            -s schemas/${{ matrix.standard }}.json \
+            -d .grok/${{ matrix.standard }}.yaml
+
+      - name: Validate ${{ matrix.standard }}/example.yaml
+        run: |
+          if [ -f "${{ matrix.standard }}/example.yaml" ]; then
+            npx ajv validate \
+              --spec=draft7 \
+              --all-errors \
+              --strict=false \
+              -s schemas/${{ matrix.standard }}.json \
+              -d ${{ matrix.standard }}/example.yaml
+          else
+            echo "No ${{ matrix.standard }}/example.yaml — skipping."
+          fi
