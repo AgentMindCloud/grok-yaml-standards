@@ -1,0 +1,14 @@
+# .github/CODEOWNERS
+# Reviews: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Default owner for everything not otherwise matched.
+*                 @JanSol0s
+
+# JSON Schemas — any change must be reviewed by the maintainer.
+/schemas/**       @JanSol0s
+
+# Per-standard spec folders (README, example.yaml, schema.md, security notes).
+/grok-*/**        @JanSol0s
+
+# CI + release automation.
+/.github/**       @JanSol0s
