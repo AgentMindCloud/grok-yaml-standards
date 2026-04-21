@@ -1,15 +1,25 @@
+<!-- Hero banner — uses locked brand tokens from .grok/brand-tokens.yaml -->
+<p align="center">
+  <img alt="grok-yaml-standards — 12 magic YAML standards for Grok on X"
+       src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20640%20120%27%20role%3D%27img%27%20aria-label%3D%27grok-yaml-standards%27%3E%3Crect%20width%3D%27640%27%20height%3D%27120%27%20fill%3D%27%230D0D0D%27%20rx%3D%2716%27%2F%3E%3Ctext%20x%3D%2740%27%20y%3D%2772%27%20font-family%3D%27Inter%2C%20system-ui%2C%20sans-serif%27%20font-size%3D%2740%27%20font-weight%3D%27800%27%20fill%3D%27%23FFFFFF%27%3Egrok-yaml-%3C%2Ftext%3E%3Ctext%20x%3D%27295%27%20y%3D%2772%27%20font-family%3D%27Inter%2C%20system-ui%2C%20sans-serif%27%20font-size%3D%2740%27%20font-weight%3D%27800%27%20fill%3D%27%231DA1F2%27%3Estandards%3C%2Ftext%3E%3Ctext%20x%3D%2740%27%20y%3D%27100%27%20font-family%3D%27Inter%2C%20system-ui%2C%20sans-serif%27%20font-size%3D%2714%27%20font-weight%3D%27500%27%20fill%3D%27%238899A6%27%3E12%20magic%20YAML%20standards%20for%20Grok%20on%20X%3C%2Ftext%3E%3Ccircle%20cx%3D%27600%27%20cy%3D%2760%27%20r%3D%2716%27%20fill%3D%27%23F5C518%27%2F%3E%3C%2Fsvg%3E"
+       width="640" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/agentmindcloud/grok-yaml-standards"><img alt="GitHub stars" src="https://img.shields.io/github/stars/agentmindcloud/grok-yaml-standards?color=F5C518&labelColor=0D0D0D"></a>
+  <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License: Apache 2.0" src="https://img.shields.io/badge/License-Apache_2.0-1DA1F2?labelColor=0D0D0D"></a>
+  <a href="standards-overview.md"><img alt="Version" src="https://img.shields.io/badge/version-1.2.0-1DA1F2?labelColor=0D0D0D"></a>
+  <a href="CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/changelog-keep--a--changelog-F5C518?labelColor=0D0D0D"></a>
+  <a href="https://x.com/JanSol0s/status/2044691252327993364"><img alt="Launched on X" src="https://img.shields.io/badge/Launched%20on%20X-0D0D0D?logo=x"></a>
+</p>
+
 # grok-yaml-standards
 
-**The official community reference library extending grok-install.yaml with 12 magic YAML standards for Grok on X. Instant agents, workflows, prompts, security, deployments & more — all via simple YAML + @grok triggers.**
+**The official community reference library extending `grok-install.yaml` with 12 magic YAML standards for Grok on X. Instant agents, workflows, prompts, security, deployments & more — all via simple YAML + `@grok` triggers.**
 
-[![GitHub stars](https://img.shields.io/github/stars/agentmindcloud/grok-yaml-standards)](https://github.com/agentmindcloud/grok-yaml-standards)  
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](standards-overview.md)  
-[![Launched on X](https://img.shields.io/badge/Launched%20on%20X-000000?logo=x)](https://x.com/JanSol0s/status/2044691252327993364)
+**The Central Community Hub for Grok YAML Magic on X** — the definitive open reference library so that **X users, developers, and xAI** can all benefit from frictionless Grok-powered features via simple YAML files in any repo.
 
-**The Central Community Hub for Grok YAML Magic on X**
-
-**Extending the official `grok-install.yaml` standard with 12 magic YAML files** — the definitive open reference library so that **X users, developers, and xAI** can all benefit from frictionless Grok-powered features via simple YAML files in any repo.
+> Brand tokens (colors, typography, hero logo) are locked in [`.grok/brand-tokens.yaml`](.grok/brand-tokens.yaml). The hero banner above is an inline SVG data-URI — no binary assets.
 
 ---
 
@@ -54,6 +64,8 @@
 | [`grok-analytics.yaml`](grok-analytics/) | `@grok analytics report` | Opt-in telemetry with PII controls | Insight |
 | [`grok-ui.yaml`](grok-ui/) | `@grok ui status` | Voice commands, dashboard widgets, shortcuts | Experience |
 
+> Count authority: [`version-reconciliation.md`](version-reconciliation.md). If you see "14 standards" anywhere in the wild, it is incorrect as of v1.2.0.
+
 ---
 
 ## Quick Start
@@ -85,6 +97,8 @@ Every standard ships with a full JSON Schema in [`/schemas/`](schemas/). Validat
 | [`schemas/grok-deploy.json`](schemas/grok-deploy.json) | Deploy targets, resource limits, health checks |
 | [`schemas/grok-analytics.json`](schemas/grok-analytics.json) | Event definitions, PII safety, retention |
 | [`schemas/grok-ui.json`](schemas/grok-ui.json) | Voice commands, dashboard widgets, shortcuts |
+
+Schemas target **JSON Schema Draft 7**. Draft 2020-12 migration is planned for v1.3.
 
 Add this to your VS Code `settings.json` for live validation:
 
@@ -128,20 +142,37 @@ Every file in this library is forward-compatible with the specs below. The matri
 - **4 new spec extensions**: grok-tools, grok-deploy, grok-analytics, grok-ui
 - Compatibility matrix
 - `.github/ISSUE_TEMPLATE/` for community requests
-- Contributors gallery
+- Contributors table (see below)
+
+See the full history in [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
-## Contributors Gallery
+## What's Coming
 
-Thank you to everyone building the future of Grok on X!
+### v1.3 — tooling pass
+- `grok-validate` CLI (Node + Go builds) that wraps ajv + yamllint against the 12 shipped schemas
+- VS Code extension pre-wired to the schema registry
+- `validate-schemas` GitHub Actions workflow (ajv + yamllint in matrix over all 12 standards)
+- JSON Schema Draft 2020-12 migration, gated on downstream compatibility testing
 
-- **@JanSol0s** — Founder & Maintainer
-
-*(Your name here after your first PR ⭐)*
+### v2.14 — exploratory (no commitment)
+A long-horizon look at whether two extra standards (`grok-cache`, `grok-auth`) are worth adding. Tracked in [`version-reconciliation.md`](version-reconciliation.md). **Until and unless a future release explicitly bumps it, the library stays at 12 standards.**
 
 ---
 
-Made with ❤️ by the Grok community for xAI and every X user.
+## Contributors
+
+Thank you to everyone building the future of Grok on X.
+
+| Contributor | Role | Contributions |
+|---|---|---|
+| <a href="https://github.com/JanSol0s"><img src="https://github.com/JanSol0s.png" width="48" height="48" alt="@JanSol0s" /></a><br/>**[@JanSol0s](https://github.com/JanSol0s)** | Creator &amp; Maintainer | v1.0.0 → v1.2.0 · All 12 standards · JSON Schemas · Compatibility matrix · Apache 2.0 relicense · X launch |
+
+Full list + "how to be added" in [`CONTRIBUTORS.md`](CONTRIBUTORS.md). Security reports go through [`SECURITY.md`](SECURITY.md).
+
+---
+
+Made with love by the Grok community for xAI and every X user.
 
 **Version 1.2.0** · Forward-compatible with `grok-install.yaml@1.0+` · Licensed under Apache 2.0 · [Launched on X April 16, 2026](https://x.com/JanSol0s/status/2044691252327993364)
