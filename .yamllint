@@ -1,0 +1,27 @@
+# .yamllint
+# Config for .github/workflows/validate-schemas.yml
+# Docs: https://yamllint.readthedocs.io/en/stable/configuration.html
+
+extends: default
+
+rules:
+  # Long inline SVG data-URIs and example YAML can exceed 80 cols; keep it advisory.
+  line-length:
+    max: 200
+    level: warning
+
+  # "yes"/"no"/"on"/"off" appear in generated examples; don't block on them.
+  truthy:
+    level: warning
+
+  # Comment block above a section is fine; don't require a blank line between.
+  comments:
+    min-spaces-from-content: 1
+    require-starting-space: true
+
+  # We don't require --- document markers across this project.
+  document-start: disable
+
+  # Allow single-indented block sequences (common in YAML style 2).
+  indentation:
+    indent-sequences: consistent
