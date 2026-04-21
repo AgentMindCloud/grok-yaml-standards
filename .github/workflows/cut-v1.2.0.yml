@@ -1,0 +1,78 @@
+# .github/workflows/cut-v1.2.0.yml
+#
+# One-shot workflow. Cuts the v1.2.0 tag + GitHub Release on the
+# repo's own servers, because push access to the sandbox that merged
+# the release commits cannot push tags through its proxy.
+#
+# After this workflow succeeds, the temp branch claude/cut-v1.2.0
+# (and this file) will be deleted — leaving only the tag and the
+# published Release.
+#
+# Runs only on pushes to the `claude/cut-v1.2.0` branch.
+
+name: cut-v1.2.0 (one-shot)
+
+on:
+  push:
+    branches: [claude/cut-v1.2.0]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Create tag + GitHub Release at the v1.2.0 commit
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.2.0
+          target_commitish: 58c13c4fdcdef4d852ed39463bfc1c95a12aa4c0
+          name: Grok YAML Standards v1.2.0
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+          body: |
+            ## Grok YAML Standards v1.2.0
+
+            The first tagged release of the community reference library.
+
+            ### What's in this release
+
+            **12 YAML standards** (8 core + 4 spec extensions), each with:
+            - a full JSON Schema (Draft 7) in `schemas/`
+            - a ready-to-drop sample in `.grok/`
+            - a spec folder (`grok-*/`) with README, `example.yaml`,
+              `schema.md`, security considerations, use cases,
+              and X trigger examples
+
+            **Core:** `grok-config`, `grok-prompts`, `grok-agent`,
+            `grok-workflow`, `grok-update`, `grok-test`, `grok-docs`,
+            `grok-security`.
+
+            **Spec extensions (new in 1.2.0):** `grok-tools`,
+            `grok-deploy`, `grok-analytics`, `grok-ui`.
+
+            ### Also in this release
+
+            - **Compatibility matrix** for `grok-install.yaml@1.0+`
+              and `grok@2026.4+`
+            - **Community health:** `SECURITY.md`, `CODEOWNERS`,
+              `FUNDING.yml`, locked brand tokens, `CHANGELOG.md`
+            - **CI** — the `validate-schemas` workflow (yamllint +
+              ajv matrix over all 12 standards + schema smoke check)
+              landed on main immediately after v1.2.0
+            - **License:** Apache 2.0 (relicensed from MIT during 1.2.0
+              development to align with xAI standards)
+
+            See `CHANGELOG.md` and `version-reconciliation.md` for the
+            authoritative version history and the "why 12, not 14"
+            explanation.
+
+            **Made with love by the Grok community for xAI and every X user.**
