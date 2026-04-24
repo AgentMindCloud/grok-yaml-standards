@@ -8,9 +8,9 @@ Only the latest minor release line receives security fixes. Older lines may rece
 
 | Version | Supported          |
 |---------|--------------------|
-| 1.2.x   | :white_check_mark: |
-| 1.1.x   | Advisories only    |
-| < 1.1   | :x:                |
+| 1.3.x   | :white_check_mark: |
+| 1.2.x   | Advisories only    |
+| < 1.2   | :x:                |
 
 ## Threat Model
 
