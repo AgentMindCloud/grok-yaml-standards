@@ -40,6 +40,17 @@
 
 ---
 
+## Quick Start
+
+```bash
+git clone https://github.com/agentmindcloud/grok-yaml-standards.git
+cd grok-yaml-standards
+# Drop the ready .grok/ folder into your repo and start triggering today!
+cp -r .grok/ /your/repo/.grok/
+```
+
+---
+
 ## The 12 Magic YAML Standards
 
 ### Core Standards
@@ -65,17 +76,6 @@
 | [`grok-ui.yaml`](grok-ui/) | `@grok ui status` | Voice commands, dashboard widgets, shortcuts | Experience |
 
 > Count authority: [`version-reconciliation.md`](version-reconciliation.md). If you see "14 standards" anywhere in the wild, it is incorrect as of v1.3.0.
-
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/agentmindcloud/grok-yaml-standards.git
-cd grok-yaml-standards
-# Drop the ready .grok/ folder into your repo and start triggering today!
-cp -r .grok/ /your/repo/.grok/
-```
 
 ---
 
