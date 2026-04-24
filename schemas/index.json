@@ -1,0 +1,119 @@
+{
+  "$comment": "Schema manifest for grok-yaml-standards. Not itself a JSON Schema — a plain JSON discovery index. Use schema_url values as --schemafile arguments with check-jsonschema.",
+  "manifest_version": "2.0.0",
+  "updated": "2026-04-18",
+  "schemas": [
+    {
+      "spec": "grok-config",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-config.json",
+      "file_glob": ".grok/grok-config.yaml",
+      "required_by": ["grok-agent", "grok-workflow", "grok-prompts"]
+    },
+    {
+      "spec": "grok-prompts",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-prompts.json",
+      "file_glob": ".grok/grok-prompts.yaml",
+      "required_by": ["grok-agent", "grok-workflow"]
+    },
+    {
+      "spec": "grok-agent",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-agent.json",
+      "file_glob": ".grok/grok-agent.yaml",
+      "required_by": ["grok-workflow"]
+    },
+    {
+      "spec": "grok-workflow",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-workflow.json",
+      "file_glob": ".grok/grok-workflow.yaml",
+      "required_by": []
+    },
+    {
+      "spec": "grok-update",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-update.json",
+      "file_glob": ".grok/grok-update.yaml",
+      "required_by": []
+    },
+    {
+      "spec": "grok-test",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-test.json",
+      "file_glob": ".grok/grok-test.yaml",
+      "required_by": ["grok-workflow"]
+    },
+    {
+      "spec": "grok-docs",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-docs.json",
+      "file_glob": ".grok/grok-docs.yaml",
+      "required_by": ["grok-workflow"]
+    },
+    {
+      "spec": "grok-security",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.1.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-security.json",
+      "file_glob": ".grok/grok-security.yaml",
+      "required_by": ["grok-agent", "grok-workflow"]
+    },
+    {
+      "spec": "grok-tools",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.2.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-tools.json",
+      "file_glob": ".grok/grok-tools.yaml",
+      "required_by": ["grok-agent", "grok-security"]
+    },
+    {
+      "spec": "grok-deploy",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.2.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-deploy.json",
+      "file_glob": ".grok/grok-deploy.yaml",
+      "required_by": ["grok-workflow"]
+    },
+    {
+      "spec": "grok-analytics",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.2.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-analytics.json",
+      "file_glob": ".grok/grok-analytics.yaml",
+      "required_by": []
+    },
+    {
+      "spec": "grok-ui",
+      "spec_version": "1.2.0",
+      "introduced_in": "grok-yaml-standards@1.2.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-ui.json",
+      "file_glob": ".grok/grok-ui.yaml",
+      "required_by": []
+    },
+    {
+      "spec": "grok-swarm",
+      "spec_version": "2.0.0",
+      "introduced_in": "grok-yaml-standards@2.0.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-swarm.schema.json",
+      "file_glob": "specs/grok-swarm.yaml",
+      "required_by": []
+    },
+    {
+      "spec": "grok-voice",
+      "spec_version": "2.0.0",
+      "introduced_in": "grok-yaml-standards@2.0.0",
+      "schema_url": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-voice.schema.json",
+      "file_glob": "specs/grok-voice.yaml",
+      "required_by": ["grok-swarm"]
+    }
+  ]
+}

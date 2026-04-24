@@ -1,0 +1,47 @@
+# Advanced patterns: parallel-capable execution, conditional branching, error recovery
+# Steps without depends_on run in parallel when the runtime supports it.
+# Use depends_on to enforce ordering only where output is needed.
+version: "1.2.0"
+author: "@dev_example"
+compatibility: ["grok@2026.4+"]
+
+workflows:
+  ResearchAndPublish:
+    description: "Full pipeline: parallel search, synthesize findings, conditionally critique, then post with approval gate."
+    trigger: "@grok run workflow:ResearchAndPublish"
+    timeout_minutes: 60
+    on_failure: "notify_user"
+    notify_on_complete: true
+    steps:
+      # search-x and search-web have no depends_on — they run in parallel
+      - name: "search-x"
+        action: "search_x"
+        on_error: "abort"
+
+      - name: "search-web"
+        action: "web_search"
+        on_error: "abort"
+
+      - name: "synthesize"
+        action: "summarize_changes"
+        depends_on: ["search-x", "search-web"]
+        timeout_seconds: 120
+        on_error: "retry"
+        retry:
+          max_attempts: 3
+          backoff: "exponential"
+          delay_seconds: 10
+
+      # critique only runs when synthesize exits cleanly
+      - name: "critique"
+        action: "grok-prompts"
+        template: "code_review"
+        depends_on: ["synthesize"]
+        condition: "steps.synthesize.exit_code === 0"
+        on_error: "skip"
+
+      - name: "approve-and-post"
+        action: "publish_thread"
+        depends_on: ["synthesize", "critique"]
+        approval_required: true
+        on_error: "notify_user"

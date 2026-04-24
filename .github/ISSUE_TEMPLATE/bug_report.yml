@@ -1,0 +1,92 @@
+name: Bug Report
+description: Report a problem with a spec, schema, or example YAML file
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug! Please fill in as much detail as possible so we can reproduce and fix it quickly.
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: Which version of grok-yaml-standards are you using?
+      options:
+        - "1.2.0 (latest)"
+        - "1.1.0"
+        - "1.0.0"
+        - "Other (describe in additional context)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: spec
+    attributes:
+      label: Which spec file is affected?
+      options:
+        - grok-config.yaml
+        - grok-prompts.yaml
+        - grok-agent.yaml
+        - grok-workflow.yaml
+        - grok-update.yaml
+        - grok-test.yaml
+        - grok-docs.yaml
+        - grok-security.yaml
+        - grok-tools.yaml
+        - grok-deploy.yaml
+        - grok-analytics.yaml
+        - grok-ui.yaml
+        - JSON Schema (schemas/ folder)
+        - README / documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen?
+      placeholder: "e.g. The schema should accept a valid temperature value of 0.5"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happens instead?
+      placeholder: "e.g. The schema validation fails with 'temperature must be a string'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: yaml_snippet
+    attributes:
+      label: YAML snippet (if applicable)
+      description: Paste the YAML that triggers the issue. Remove any secrets before posting.
+      render: yaml
+      placeholder: |
+        version: "1.2.0"
+        author: "@yourhandle"
+        grok:
+          temperature: 0.5
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Tell us about your setup
+      placeholder: |
+        - OS: macOS 14 / Ubuntu 22.04 / Windows 11
+        - Editor: VS Code 1.88 / JetBrains IDEA 2024.1
+        - YAML extension: redhat.vscode-yaml 1.14
+        - Grok version: grok@2026.4+
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any other information that might help (error messages, screenshots, links to related issues)
