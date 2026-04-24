@@ -114,6 +114,24 @@ Add this to your VS Code `settings.json` for live validation:
 
 ---
 
+## Validation & CI
+
+Two GitHub Actions workflows back every change in this repo:
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| [`validate-schemas.yml`](.github/workflows/validate-schemas.yml) | `pull_request`, `push` to `main` | Runs `yamllint` (config: [`.yamllint`](.yamllint)) against `.grok/` + every `grok-*/example.yaml` + every `grok-*/examples/*.yaml`, then `ajv-cli` (Draft 7) against each of the 12 schemas, plus a smoke check that every `schemas/*.json` declares `$id`, `title`, `description`, and `$schema: draft-07`. |
+| [`release.yml`](.github/workflows/release.yml) | `push` of a `v*` tag | Publishes a GitHub Release via `softprops/action-gh-release@v2` with auto-generated notes. |
+
+Run the same validation locally against a single file:
+
+```bash
+npx ajv validate --spec=draft7 --all-errors --strict=false \
+  -s schemas/grok-agent.json -d .grok/grok-agent.yaml
+```
+
+---
+
 ## Compatibility Matrix
 
 Every file in this library is forward-compatible with the specs below. The matrix shows the minimum version required for each standard.
@@ -141,7 +159,7 @@ Every file in this library is forward-compatible with the specs below. The matri
 - **GrokForge Orchestration** — optional `orchestration` block on `grok-workflow` supporting `hybrid`, `graph`, `crew`, and `debate_swarm` modes with vector-memory backing.
 - **4 reference agents** in [`grok-agent/examples/`](grok-agent/examples/) (`research-swarm-v2`, `trend-to-thread-bot`, `code-reviewer-agent`, `private-ops-agent`).
 - **3 reference workflows** in [`grok-workflow/examples/`](grok-workflow/examples/) (`massive-x-research-swarm`, `debate-swarm-example`, `simple-graph-agent`).
-- **CI coverage** — `validate-schemas` now lints and validates every `grok-*/examples/*.yaml` file.
+- **CI coverage** — [`validate-schemas`](.github/workflows/validate-schemas.yml) now lints and validates every `grok-*/examples/*.yaml` file.
 - Count stays **12**. No new schemas; no new top-level standards.
 
 See the full history in [`CHANGELOG.md`](CHANGELOG.md).
@@ -157,6 +175,17 @@ See the full history in [`CHANGELOG.md`](CHANGELOG.md).
 
 ### v2.14 — exploratory (no commitment)
 A long-horizon look at whether two extra standards (`grok-cache`, `grok-auth`) are worth adding. Tracked in [`version-reconciliation.md`](version-reconciliation.md). **Until and unless a future release explicitly bumps it, the library stays at 12 standards.**
+
+---
+
+## Related Docs
+
+- [`ROADMAP.md`](ROADMAP.md) — path to official xAI adoption and per-version milestones.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — branching convention, review flow, and what we welcome.
+- [`SECURITY.md`](SECURITY.md) — threat model and private vulnerability reporting.
+- [`how-xai-can-adopt.md`](how-xai-can-adopt.md) — the pitch we hand to the xAI team.
+- [`standards-overview.md`](standards-overview.md) — side-by-side comparison of all 12 standards.
+- [`schemas/README.md`](schemas/README.md) — per-schema notes and the full VS Code snippet.
 
 ---
 
