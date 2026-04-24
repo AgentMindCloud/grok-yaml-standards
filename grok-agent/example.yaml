@@ -27,3 +27,44 @@ agents:
       - reply_to_mentions
     memory: "session_only"
     max_turns_per_session: 50
+
+  ResearchSwarmPublic:
+    description: "Multi-source research agent that synthesizes web, X, and code findings into briefings"
+    tools:
+      - web_search
+      - web_fetch
+      - search_code
+      - post_thread
+    memory: "long_term"
+    max_turns_per_session: 200
+    auto_save_state: true
+    permissions:
+      - read
+      - network
+      - publish
+    hub_card:
+      publish: true
+      registry_name: "Research Swarm"
+      model: "grok-4"
+      github: "https://github.com/agentmindcloud/research-swarm"
+      tags:
+        - research
+        - synthesis
+        - x-native
+        - briefings
+      safety_profile: "balanced"
+      permission_scopes:
+        - read
+        - network
+        - publish
+      install_command: "grok install @agentmindcloud/research-swarm"
+      deploy_command: "grok deploy ResearchSwarmPublic --target=production"
+      stats:
+        downloads: 1280
+        stars: 94
+        forks: 12
+      x_native_features:
+        - thread_post
+        - search
+        - reply
+      leaderboard_score: 78.4
