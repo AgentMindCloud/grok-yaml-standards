@@ -4,7 +4,7 @@ Thank you to everyone building the future of Grok on X.
 
 | Contributor | Role | Contributions |
 |---|---|---|
-| <a href="https://github.com/JanSol0s"><img src="https://github.com/JanSol0s.png" width="48" height="48" alt="@JanSol0s" /></a><br/>**[@JanSol0s](https://github.com/JanSol0s)** | Creator &amp; Maintainer | v1.0.0 → v1.2.0 · All 12 standards · JSON Schemas · Compatibility matrix · Apache 2.0 relicense · X launch |
+| <a href="https://github.com/JanSol0s"><img src="https://github.com/JanSol0s.png" width="48" height="48" alt="@JanSol0s" /></a><br/>**[@JanSol0s](https://github.com/JanSol0s)** | Creator &amp; Maintainer | v1.0.0 → v1.3.0 · All 12 standards · JSON Schemas · Compatibility matrix · Apache 2.0 relicense · X launch · Hub Card · Orchestration |
 
 ## Want to be listed?
 

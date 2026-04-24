@@ -1,10 +1,10 @@
 # .grok/grok-workflow.yaml
-version: "1.1.0"
+version: "1.3.0"
 author: "@JanSol0s"
 compatibility:
   - "grok-install.yaml@1.0+"
   - "grok@2026.4+"
-  - "grok-yaml-standards@1.1+"
+  - "grok-yaml-standards@1.3+"
 
 workflows:
   ReleasePipeline:
@@ -33,4 +33,47 @@ workflows:
         action: "grok-prompts"
         prompt: "viral_thread"
       - name: "Schedule"
+        action: "post_thread"
+
+  ResearchSwarm:
+    description: "Hybrid multi-agent research pipeline that gathers, synthesizes, and publishes a briefing"
+    trigger: "@grok run workflow:ResearchSwarm"
+    timeout_minutes: 60
+    orchestration:
+      mode: "hybrid"
+      agents:
+        - name: "Scout"
+          role: "Gathers candidate sources from the open web and X"
+          tools:
+            - web_search
+            - web_fetch
+          count: 3
+        - name: "Analyst"
+          role: "Synthesizes scouted material into a structured briefing"
+          tools:
+            - read_file
+            - write_file
+            - search_code
+        - name: "Publisher"
+          role: "Posts the final briefing as an X thread"
+          tools:
+            - post_thread
+      graph:
+        edges:
+          - from: "Scout"
+            to: "Analyst"
+          - from: "Analyst"
+            to: "Publisher"
+            condition: "steps.Analyst.quality_score >= 0.8"
+      memory:
+        type: "vector"
+        persist: true
+        vector_store: "qdrant"
+    steps:
+      - name: "Gather Sources"
+        action: "web_search"
+      - name: "Synthesize"
+        action: "grok-prompts"
+        prompt: "research_brief"
+      - name: "Publish"
         action: "post_thread"

@@ -33,6 +33,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.github/CODE_OF_CONDUCT.md` (Contributor Covenant v2.1) — deferred until a
   maintainer-owned contact address is available.
 
+## [1.3.0] — 2026-04-24
+
+### Added
+- **`hub_card` block** on `grok-agent` for GrokHub registry publishing
+  (opt-in; existing agents validate unchanged).
+- **`orchestration` block** on `grok-workflow` with `hybrid`, `graph`, `crew`,
+  and `debate_swarm` modes, plus optional `debate_swarm` and `memory`
+  (ephemeral / session / long_term / vector) sub-objects.
+- `grok-agent/examples/` with four reference configs (`research-swarm-v2`,
+  `trend-to-thread-bot`, `code-reviewer-agent`, `private-ops-agent`) plus a
+  README.
+- `grok-workflow/examples/` with three reference configs
+  (`massive-x-research-swarm`, `debate-swarm-example`, `simple-graph-agent`)
+  plus a README.
+- `validate-schemas` CI workflow now validates every `grok-*/examples/*.yaml`
+  and extends yamllint coverage to the new sub-folders.
+
+### Changed
+- Extended `schemas/grok-agent.json` and `schemas/grok-workflow.json` with
+  optional top-level blocks. Fully **backward-compatible**: every existing
+  `.grok/*.yaml` and `grok-*/example.yaml` still validates.
+- Count stays at **12**. No new schemas; no new top-level standards.
+
 ## [1.2.0] — 2026-04-17
 
 ### Added
@@ -80,7 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `standards-overview.md`, `how-xai-can-adopt.md`.
 - MIT license (relicensed to Apache 2.0 in 1.2.0).
 
-[Unreleased]: https://github.com/AgentMindCloud/grok-yaml-standards/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/AgentMindCloud/grok-yaml-standards/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/AgentMindCloud/grok-yaml-standards/releases/tag/v1.3.0
 [1.2.0]: https://github.com/AgentMindCloud/grok-yaml-standards/releases/tag/v1.2.0
 [1.1.0]: https://github.com/AgentMindCloud/grok-yaml-standards/releases/tag/v1.1.0
 [1.0.0]: https://github.com/AgentMindCloud/grok-yaml-standards/releases/tag/v1.0.0

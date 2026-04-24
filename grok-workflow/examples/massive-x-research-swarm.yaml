@@ -1,0 +1,93 @@
+# grok-workflow/examples/massive-x-research-swarm.yaml
+# Reference workflow: large hybrid swarm for deep market/topic research.
+# 6 agent roles, 28 total agent instances, shared qdrant vector memory.
+# Copy into your repo as .grok/grok-workflow.yaml to use.
+version: "1.3.0"
+author: "@AgentMindCloud"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.3+"
+
+workflows:
+  MassiveXResearchSwarm:
+    description: "Large hybrid swarm that scans X + the open web, critiques its own findings, and publishes a consolidated briefing"
+    trigger: "@grok run workflow:MassiveXResearchSwarm"
+    timeout_minutes: 180
+    on_failure: "continue"
+    notify_on_complete: true
+    orchestration:
+      mode: "hybrid"
+      agents:
+        - name: "XScout"
+          role: "Scans X for emerging signals, trending posts, and relevant threads"
+          tools:
+            - web_search
+            - reply_to_mentions
+          count: 10
+        - name: "WebScout"
+          role: "Fetches candidate articles, docs, and repos from the open web"
+          tools:
+            - web_search
+            - web_fetch
+          count: 8
+        - name: "Fact_Checker"
+          role: "Cross-references claims against primary sources and flags inconsistencies"
+          tools:
+            - web_fetch
+            - search_code
+          count: 4
+        - name: "Analyst"
+          role: "Synthesizes scout material into a structured briefing with citations"
+          tools:
+            - read_file
+            - write_file
+            - search_code
+          count: 3
+        - name: "Critic"
+          role: "Red-teams the analyst draft for weak claims, bias, and missing counter-evidence"
+          tools:
+            - read_file
+            - search_code
+          count: 2
+        - name: "Publisher"
+          role: "Publishes the final briefing as an X thread and notifies subscribers"
+          tools:
+            - post_thread
+            - send_notification
+          count: 1
+      graph:
+        edges:
+          - from: "XScout"
+            to: "Fact_Checker"
+          - from: "WebScout"
+            to: "Fact_Checker"
+          - from: "Fact_Checker"
+            to: "Analyst"
+            condition: "steps.FactCheck.contradictions < 5"
+          - from: "Analyst"
+            to: "Critic"
+          - from: "Critic"
+            to: "Publisher"
+            condition: "steps.Critique.approval === true"
+      memory:
+        type: "vector"
+        persist: true
+        vector_store: "qdrant"
+    steps:
+      - name: "Scan X"
+        action: "web_search"
+        input: "trending"
+      - name: "FactCheck"
+        action: "grok-prompts"
+        prompt: "fact_check"
+      - name: "Synthesize"
+        action: "grok-prompts"
+        prompt: "research_brief"
+      - name: "Critique"
+        action: "grok-prompts"
+        prompt: "red_team_review"
+      - name: "Publish"
+        action: "post_thread"
+        template: "research_briefing"
+        condition: "steps.Critique.approval === true"
