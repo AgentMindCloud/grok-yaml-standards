@@ -90,9 +90,9 @@ cp -r .grok/ /your/repo/.grok/          # drop in any repo
 
 ```mermaid
 flowchart LR
-    INSTALL([grok-install.yaml<br/>@1.0+]) --> STD{{grok-yaml-standards<br/>v1.3.0 · 12 standards}}
-    STD --> CORE[Core · 8]
-    STD --> EXT[Extensions · 4]
+    INSTALL["grok-install.yaml v1.0+"] --> STD["grok-yaml-standards v1.3.0 · 12 standards"]
+    STD --> CORE["Core · 8"]
+    STD --> EXT["Extensions · 4"]
     CORE --> C1((grok-config))
     CORE --> C2((grok-prompts))
     CORE --> C3((grok-agent))
@@ -105,8 +105,8 @@ flowchart LR
     EXT --> E2((grok-deploy))
     EXT --> E3((grok-analytics))
     EXT --> E4((grok-ui))
-    C3 -.hub_card.-> HUB[[GrokHub Registry]]
-    C4 -.orchestration.-> FORGE[[GrokForge · graph/crew/debate_swarm]]
+    C3 -.-> HUB["GrokHub Registry"]
+    C4 -.-> FORGE["GrokForge Orchestration"]
 ```
 
 ## ✦ Core Standards
