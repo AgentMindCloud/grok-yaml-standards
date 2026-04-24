@@ -43,7 +43,7 @@ jobs:
 
       - name: Lint YAML
         run: |
-          yamllint -c .yamllint .grok grok-*/example.yaml
+          yamllint -c .yamllint .grok grok-*/example.yaml grok-*/examples/*.yaml
 
   schema-smoke:
     name: schema smoke check
@@ -121,4 +121,19 @@ jobs:
               -d ${{ matrix.standard }}/example.yaml
           else
             echo "No ${{ matrix.standard }}/example.yaml — skipping."
+          fi
+
+      - name: Validate ${{ matrix.standard }}/examples/*.yaml (reference configs)
+        if: matrix.standard == 'grok-agent' || matrix.standard == 'grok-workflow'
+        run: |
+          if [ -d "${{ matrix.standard }}/examples" ]; then
+            for f in ${{ matrix.standard }}/examples/*.yaml; do
+              [ -f "$f" ] || continue
+              npx ajv validate \
+                --spec=draft7 \
+                --all-errors \
+                --strict=false \
+                -s schemas/${{ matrix.standard }}.json \
+                -d "$f"
+            done
           fi
