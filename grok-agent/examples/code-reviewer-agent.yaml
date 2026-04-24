@@ -1,0 +1,49 @@
+# grok-agent/examples/code-reviewer-agent.yaml
+# Reference config: strict, read-only code review agent for pull requests.
+# Copy into your repo as .grok/grok-agent.yaml to use.
+version: "1.3.0"
+author: "@AgentMindCloud"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.3+"
+
+agents:
+  CodeReviewerAgent:
+    description: "Read-only senior engineer that leaves structured review comments on pull requests without modifying source"
+    tools:
+      - read_file
+      - search_code
+      - list_files
+    memory: "session_only"
+    max_turns_per_session: 40
+    personality: "technical"
+    system_prompt: "You are a meticulous code reviewer. Read only — never propose writes, deploys, or commits. Focus on correctness, security, readability, and test coverage. Be concise and cite file:line."
+    permissions:
+      - read
+    rate_limit:
+      requests_per_minute: 120
+      requests_per_day: 10000
+    hub_card:
+      publish: true
+      registry_name: "Code Reviewer Agent"
+      model: "grok-4"
+      github: "https://github.com/AgentMindCloud/code-reviewer-agent"
+      tags:
+        - code-review
+        - read-only
+        - quality
+        - pull-requests
+        - static-analysis
+      safety_profile: "strict"
+      permission_scopes:
+        - read
+      install_command: "uvx install agentmindcloud-code-reviewer"
+      deploy_command: "grok deploy CodeReviewerAgent --target=ci"
+      stats:
+        downloads: 24580
+        stars: 1834
+        forks: 241
+      x_native_features:
+        - media_analysis
+      leaderboard_score: 91.8

@@ -1,0 +1,55 @@
+# grok-agent/examples/research-swarm-v2.yaml
+# Reference config: public research agent published to GrokHub.
+# Copy into your repo as .grok/grok-agent.yaml to use.
+version: "1.3.0"
+author: "@AgentMindCloud"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.3+"
+
+agents:
+  ResearchSwarmV2:
+    description: "Multi-source research agent that synthesizes web, X, and code findings into publish-ready briefings"
+    tools:
+      - web_search
+      - web_fetch
+      - search_code
+      - post_thread
+      - reply_to_mentions
+    memory: "long_term"
+    max_turns_per_session: 250
+    auto_save_state: true
+    permissions:
+      - read
+      - network
+      - publish
+    rate_limit:
+      requests_per_minute: 60
+      requests_per_day: 5000
+    hub_card:
+      publish: true
+      registry_name: "Research Swarm v2"
+      model: "grok-4"
+      github: "https://github.com/AgentMindCloud/research-swarm-v2"
+      tags:
+        - research
+        - synthesis
+        - briefings
+        - x-native
+        - multi-agent
+      safety_profile: "balanced"
+      permission_scopes:
+        - read
+        - network
+        - publish
+      install_command: "grok install @agentmindcloud/research-swarm-v2"
+      deploy_command: "grok deploy ResearchSwarmV2 --target=production"
+      stats:
+        downloads: 18420
+        stars: 1247
+        forks: 186
+      x_native_features:
+        - search
+        - thread_post
+      leaderboard_score: 86.5
