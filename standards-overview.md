@@ -29,7 +29,7 @@
 **All files** follow the same modern YAML structure:
 
 ```yaml
-version: "1.2.0"
+version: "1.3.0"
 author: "@yourhandle"
 compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+"]
 # …
@@ -45,6 +45,6 @@ This enables automatic validation in GitHub, VS Code, and any modern editor.
 - Auto-complete for contributors
 - Future-proof for xAI native support
 
-> Schemas currently target JSON Schema **Draft 7**. Draft 2020-12 migration is on the v1.3 roadmap once all downstream consumers confirm compatibility.
+> Schemas currently target JSON Schema **Draft 7**. Draft 2020-12 migration is on the v1.4 roadmap once all downstream consumers confirm compatibility.
 
 See [`version-reconciliation.md`](version-reconciliation.md) for the authoritative list and the one-line PR text to correct any downstream repo that claims a different count.

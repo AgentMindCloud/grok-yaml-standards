@@ -55,4 +55,4 @@ Every schema is a complete, property-level contract with:
 }
 ```
 
-**Version:** 1.2.0 · Forward-compatible with `grok-install.yaml@1.0+`
+**Version:** 1.3.0 · Forward-compatible with `grok-install.yaml@1.0+`

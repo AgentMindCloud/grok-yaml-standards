@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/agentmindcloud/grok-yaml-standards"><img alt="GitHub stars" src="https://img.shields.io/github/stars/agentmindcloud/grok-yaml-standards?color=F5C518&labelColor=0D0D0D"></a>
   <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License: Apache 2.0" src="https://img.shields.io/badge/License-Apache_2.0-1DA1F2?labelColor=0D0D0D"></a>
-  <a href="standards-overview.md"><img alt="Version" src="https://img.shields.io/badge/version-1.2.0-1DA1F2?labelColor=0D0D0D"></a>
+  <a href="standards-overview.md"><img alt="Version" src="https://img.shields.io/badge/version-1.3.0-1DA1F2?labelColor=0D0D0D"></a>
   <a href="CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/changelog-keep--a--changelog-F5C518?labelColor=0D0D0D"></a>
   <a href="https://x.com/JanSol0s/status/2044691252327993364"><img alt="Launched on X" src="https://img.shields.io/badge/Launched%20on%20X-0D0D0D?logo=x"></a>
 </p>
@@ -27,7 +27,7 @@
 
 `grok-install.yaml` showed the world how a single YAML file can turn any GitHub repo into a Grok-native experience.
 
-**grok-yaml-standards v1.2.0** ships rich templates, a ready-to-drop `.grok/` folder, GitHub release automation, comprehensive JSON Schema validation, issue templates, and an official launch on X (with @grok's positive reply!).
+**grok-yaml-standards v1.3.0** extends `grok-agent` with an optional **GrokHub Card** for registry publishing, adds a **GrokForge Orchestration** block to `grok-workflow` (hybrid, graph, crew, debate_swarm modes), and ships seven drop-in reference configs under `grok-*/examples/`. The library keeps its ready `.grok/` folder, full JSON Schema coverage, and CI validation — now extended to the new examples too.
 
 ---
 
@@ -64,7 +64,7 @@
 | [`grok-analytics.yaml`](grok-analytics/) | `@grok analytics report` | Opt-in telemetry with PII controls | Insight |
 | [`grok-ui.yaml`](grok-ui/) | `@grok ui status` | Voice commands, dashboard widgets, shortcuts | Experience |
 
-> Count authority: [`version-reconciliation.md`](version-reconciliation.md). If you see "14 standards" anywhere in the wild, it is incorrect as of v1.2.0.
+> Count authority: [`version-reconciliation.md`](version-reconciliation.md). If you see "14 standards" anywhere in the wild, it is incorrect as of v1.3.0.
 
 ---
 
@@ -98,7 +98,7 @@ Every standard ships with a full JSON Schema in [`/schemas/`](schemas/). Validat
 | [`schemas/grok-analytics.json`](schemas/grok-analytics.json) | Event definitions, PII safety, retention |
 | [`schemas/grok-ui.json`](schemas/grok-ui.json) | Voice commands, dashboard widgets, shortcuts |
 
-Schemas target **JSON Schema Draft 7**. Draft 2020-12 migration is planned for v1.3.
+Schemas target **JSON Schema Draft 7**. Draft 2020-12 migration is planned for v1.4.
 
 Add this to your VS Code `settings.json` for live validation:
 
@@ -135,14 +135,14 @@ Every file in this library is forward-compatible with the specs below. The matri
 
 ---
 
-## New in v1.2.0
+## New in v1.3.0
 
-- Official X launch + @grok endorsement
-- **Comprehensive JSON Schema validation** — all 12 specs have full property-level schemas with enums, constraints, required fields, and descriptions
-- **4 new spec extensions**: grok-tools, grok-deploy, grok-analytics, grok-ui
-- Compatibility matrix
-- `.github/ISSUE_TEMPLATE/` for community requests
-- Contributors table (see below)
+- **GrokHub Card** — optional `hub_card` block on `grok-agent` for publishing agents to a discoverable registry (opt-in; existing agents unaffected).
+- **GrokForge Orchestration** — optional `orchestration` block on `grok-workflow` supporting `hybrid`, `graph`, `crew`, and `debate_swarm` modes with vector-memory backing.
+- **4 reference agents** in [`grok-agent/examples/`](grok-agent/examples/) (`research-swarm-v2`, `trend-to-thread-bot`, `code-reviewer-agent`, `private-ops-agent`).
+- **3 reference workflows** in [`grok-workflow/examples/`](grok-workflow/examples/) (`massive-x-research-swarm`, `debate-swarm-example`, `simple-graph-agent`).
+- **CI coverage** — `validate-schemas` now lints and validates every `grok-*/examples/*.yaml` file.
+- Count stays **12**. No new schemas; no new top-level standards.
 
 See the full history in [`CHANGELOG.md`](CHANGELOG.md).
 
@@ -150,10 +150,9 @@ See the full history in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## What's Coming
 
-### v1.3 — tooling pass
+### v1.4 — tooling pass
 - `grok-validate` CLI (Node + Go builds) that wraps ajv + yamllint against the 12 shipped schemas
 - VS Code extension pre-wired to the schema registry
-- `validate-schemas` GitHub Actions workflow (ajv + yamllint in matrix over all 12 standards)
 - JSON Schema Draft 2020-12 migration, gated on downstream compatibility testing
 
 ### v2.14 — exploratory (no commitment)
@@ -167,7 +166,7 @@ Thank you to everyone building the future of Grok on X.
 
 | Contributor | Role | Contributions |
 |---|---|---|
-| <a href="https://github.com/JanSol0s"><img src="https://github.com/JanSol0s.png" width="48" height="48" alt="@JanSol0s" /></a><br/>**[@JanSol0s](https://github.com/JanSol0s)** | Creator &amp; Maintainer | v1.0.0 → v1.2.0 · All 12 standards · JSON Schemas · Compatibility matrix · Apache 2.0 relicense · X launch |
+| <a href="https://github.com/JanSol0s"><img src="https://github.com/JanSol0s.png" width="48" height="48" alt="@JanSol0s" /></a><br/>**[@JanSol0s](https://github.com/JanSol0s)** | Creator &amp; Maintainer | v1.0.0 → v1.3.0 · All 12 standards · JSON Schemas · Compatibility matrix · Apache 2.0 relicense · X launch · Hub Card · Orchestration |
 
 Full list + "how to be added" in [`CONTRIBUTORS.md`](CONTRIBUTORS.md). Security reports go through [`SECURITY.md`](SECURITY.md).
 
@@ -175,4 +174,4 @@ Full list + "how to be added" in [`CONTRIBUTORS.md`](CONTRIBUTORS.md). Security 
 
 Made with love by the Grok community for xAI and every X user.
 
-**Version 1.2.0** · Forward-compatible with `grok-install.yaml@1.0+` · Licensed under Apache 2.0 · [Launched on X April 16, 2026](https://x.com/JanSol0s/status/2044691252327993364)
+**Version 1.3.0** · Forward-compatible with `grok-install.yaml@1.0+` · Licensed under Apache 2.0 · [Launched on X April 16, 2026](https://x.com/JanSol0s/status/2044691252327993364)
