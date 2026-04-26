@@ -1,3 +1,9 @@
+---
+title: grok-agent
+description: Persistent stateful Grok agents
+image: /docs/posters/grok-agent.png
+---
+
 # grok-agent.yaml
 
 **What problem it solves**  

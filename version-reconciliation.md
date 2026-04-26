@@ -60,7 +60,7 @@ Copy-paste into the PR title or a single-commit message in any downstream repo t
 
 And for the PR body, if one is needed:
 
-> v1.2.0 of `grok-yaml-standards` ships exactly 12 standards: 8 core (`grok-config`, `grok-prompts`, `grok-agent`, `grok-workflow`, `grok-update`, `grok-test`, `grok-docs`, `grok-security`) plus 4 spec extensions added in v1.2.0 (`grok-tools`, `grok-deploy`, `grok-analytics`, `grok-ui`). See https://github.com/AgentMindCloud/grok-yaml-standards/blob/main/version-reconciliation.md.
+> v1.2.0 of `grok-yaml-standards` ships exactly 12 standards: 8 core (`grok-config`, `grok-prompts`, `grok-agent`, `grok-workflow`, `grok-update`, `grok-test`, `grok-docs`, `grok-security`) plus 4 spec extensions added in v1.2.0 (`grok-tools`, `grok-deploy`, `grok-analytics`, `grok-ui`). See https://agentmindcloud.github.io/grok-yaml-standards/version-reconciliation.html.
 
 ## If you need to revisit this
 

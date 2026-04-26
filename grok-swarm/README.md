@@ -1,3 +1,9 @@
+---
+title: grok-swarm
+description: Multi-agent orchestration patterns
+image: /docs/posters/grok-swarm.png
+---
+
 # grok-swarm.yaml
 
 **What problem it solves**
