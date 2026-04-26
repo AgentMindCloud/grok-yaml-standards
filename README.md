@@ -1,3 +1,9 @@
+---
+title: grok-yaml-standards
+description: 12 magic YAML standards for Grok on X — drop-in agents, workflows, prompts, security, deployments, analytics, and more.
+image: /docs/posters/og-default.png
+---
+
 <!-- NEON / CYBERPUNK REPO TEMPLATE · GROK-YAML-STANDARDS -->
 
 <p align="center">
@@ -162,9 +168,9 @@ Add this to VS Code `settings.json` for live validation:
 ```json
 {
   "yaml.schemas": {
-    "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-config.json": ".grok/grok-config.yaml",
-    "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-agent.json": ".grok/grok-agent.yaml",
-    "https://github.com/agentmindcloud/grok-yaml-standards/schemas/grok-tools.json": ".grok/grok-tools.yaml"
+    "https://agentmindcloud.github.io/grok-yaml-standards/schemas/grok-config.json": ".grok/grok-config.yaml",
+    "https://agentmindcloud.github.io/grok-yaml-standards/schemas/grok-agent.json": ".grok/grok-agent.yaml",
+    "https://agentmindcloud.github.io/grok-yaml-standards/schemas/grok-tools.json": ".grok/grok-tools.yaml"
   }
 }
 ```

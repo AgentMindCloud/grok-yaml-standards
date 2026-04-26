@@ -1,3 +1,9 @@
+---
+title: grok-prompts
+description: Reusable versioned prompt library
+image: /docs/posters/grok-prompts.png
+---
+
 # grok-prompts.yaml
 
 **What problem it solves**  

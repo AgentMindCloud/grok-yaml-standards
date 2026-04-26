@@ -1,3 +1,9 @@
+---
+title: grok-voice
+description: Voice-first interface bindings
+image: /docs/posters/grok-voice.png
+---
+
 # grok-voice.yaml
 
 **What problem it solves**
