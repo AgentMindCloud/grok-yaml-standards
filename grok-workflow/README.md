@@ -1,3 +1,9 @@
+---
+title: grok-workflow
+description: Multi-step automated processes
+image: /docs/posters/grok-workflow.png
+---
+
 # grok-workflow.yaml
 
 **What problem it solves**  

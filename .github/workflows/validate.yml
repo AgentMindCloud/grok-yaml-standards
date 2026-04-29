@@ -81,23 +81,20 @@ jobs:
       - name: Install check-jsonschema
         run: pip install "check-jsonschema>=0.28"
 
-      - name: Validate grok-agent specs
+      - name: Validate grok-agent spec
         run: |
           check-jsonschema --schemafile schemas/grok-agent.json \
-            .grok/grok-agent.yaml \
-            .grok/grok-agent.advanced.yaml
+            .grok/grok-agent.yaml
 
-      - name: Validate grok-workflow specs
+      - name: Validate grok-workflow spec
         run: |
           check-jsonschema --schemafile schemas/grok-workflow.json \
-            .grok/grok-workflow.yaml \
-            .grok/grok-workflow.advanced.yaml
+            .grok/grok-workflow.yaml
 
-      - name: Validate grok-security specs
+      - name: Validate grok-security spec
         run: |
           check-jsonschema --schemafile schemas/grok-security.json \
-            .grok/grok-security.yaml \
-            .grok/grok-security.advanced.yaml
+            .grok/grok-security.yaml
 
       - name: Validate grok-config
         run: check-jsonschema --schemafile schemas/grok-config.json .grok/grok-config.yaml
@@ -126,8 +123,13 @@ jobs:
       - name: Validate grok-ui
         run: check-jsonschema --schemafile schemas/grok-ui.json .grok/grok-ui.yaml
 
-      - name: Validate grok-swarm spec
-        run: check-jsonschema --schemafile schemas/grok-swarm.schema.json specs/grok-swarm.yaml
+      # Proposed (Draft 2020-12) schemas live under schemas/proposed/ and
+      # validate the specs/ entries from the polish-branch design. The
+      # canonical grok-swarm/grok-voice work (audit-ecosystem-state branch
+      # variant) is at .grok/grok-swarm.yaml + schemas/grok-swarm.json and
+      # is already covered by validate-schemas.yml.
+      - name: Validate proposed grok-swarm spec
+        run: check-jsonschema --schemafile schemas/proposed/grok-swarm.schema.json specs/grok-swarm.yaml
 
-      - name: Validate grok-voice spec
-        run: check-jsonschema --schemafile schemas/grok-voice.schema.json specs/grok-voice.yaml
+      - name: Validate proposed grok-voice spec
+        run: check-jsonschema --schemafile schemas/proposed/grok-voice.schema.json specs/grok-voice.yaml
