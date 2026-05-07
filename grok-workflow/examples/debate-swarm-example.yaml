@@ -1,0 +1,62 @@
+# grok-workflow/examples/debate-swarm-example.yaml
+# Reference workflow: 3-agent debate swarm that adjudicates a contested
+# claim over 5 rounds, then publishes the majority verdict to X.
+# Copy into your repo as .grok/grok-workflow.yaml to use.
+version: "1.3.0"
+author: "@AgentMindCloud"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.3+"
+
+workflows:
+  ClaimDebateSwarm:
+    description: "Three specialized agents debate a contested claim for five rounds; a grok-4 voter tallies the final verdict and Publisher posts it"
+    trigger: "@grok run workflow:ClaimDebateSwarm"
+    timeout_minutes: 45
+    notify_on_complete: true
+    orchestration:
+      mode: "debate_swarm"
+      agents:
+        - name: "Proponent"
+          role: "Argues in favor of the claim using primary sources and structured reasoning"
+          tools:
+            - web_search
+            - web_fetch
+            - read_file
+        - name: "Skeptic"
+          role: "Argues against the claim and surfaces counter-evidence and logical fallacies"
+          tools:
+            - web_search
+            - web_fetch
+            - read_file
+        - name: "Moderator"
+          role: "Summarizes each round, keeps the debate on-topic, and synthesizes both sides for the voter"
+          tools:
+            - read_file
+            - write_file
+            - search_code
+      debate_swarm:
+        rounds: 5
+        voter_model: "grok-4"
+        quorum: 0.66
+      memory:
+        type: "session"
+        persist: false
+    steps:
+      - name: "Load Claim"
+        action: "read_file"
+        input: "claim.md"
+      - name: "Debate"
+        action: "grok-prompts"
+        prompt: "structured_debate"
+        timeout_minutes: 30
+      - name: "Tally Vote"
+        action: "grok-prompts"
+        prompt: "debate_verdict"
+      - name: "Publish Verdict to X"
+        action: "post_thread"
+        template: "debate_verdict_thread"
+        condition: "steps.TallyVote.quorum_met === true"
+      - name: "Reply to Mentions"
+        action: "reply_to_mentions"

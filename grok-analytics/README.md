@@ -1,3 +1,9 @@
+---
+title: grok-analytics
+description: Opt-in telemetry with PII controls
+image: /docs/posters/grok-analytics.png
+---
+
 # grok-analytics.yaml
 
 **What problem it solves**  

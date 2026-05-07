@@ -1,0 +1,61 @@
+# specs/grok-voice.yaml
+# Reference spec for grok-voice — Grok 4.20 speech-to-text and text-to-speech.
+#
+# grok-voice enables real-time voice input (STT) and output (TTS) for Grok
+# agents and workflows. Features include emotion-aware synthesis, multi-speaker
+# sessions, and automatic speaker diarization for transcription.
+#
+# Compatibility:
+#   - grok@4.20+         (voice API endpoint required)
+#   - grok-yaml-standards@2.0+
+#
+# Required X OAuth2 scopes (add to grok-security.yaml x_scopes):
+#   - voice.read    Read voice session state / transcripts
+#   - voice.write   Initiate voice sessions, post audio
+
+version: "2.0.0"
+author: "@dev_example"
+compatibility:
+  - "grok@4.20+"
+  - "grok-yaml-standards@2.0+"
+
+voice:
+  # Master switch. No voice API calls are made when false.
+  enabled: true
+
+  # ── Models ────────────────────────────────────────────────────────────────
+  # Speech-to-text model. Currently only one variant is available.
+  stt_model: "grok-voice-stt-latest"
+
+  # Text-to-speech model. "natural" variant uses prosody/emotion modelling.
+  tts_model: "grok-voice-tts-natural"
+
+  # ── Voice identity ────────────────────────────────────────────────────────
+  # Opaque voice ID string returned by the Grok voices catalog API.
+  # Omit to use the default system voice for the selected tts_model.
+  voice_id: "nova-en-us-1"
+
+  # ── Features ─────────────────────────────────────────────────────────────
+  # real-time-conversation   Bidirectional streaming; agent responds mid-speech.
+  # emotion-aware            TTS modulates tone/pacing to match output sentiment.
+  # multi-speaker            Session handles multiple concurrent speakers.
+  # speaker-diarization      STT transcript labels each speaker separately.
+  features:
+    - "real-time-conversation"
+    - "emotion-aware"
+
+  # ── Fallback ──────────────────────────────────────────────────────────────
+  # Behaviour when the voice API is unavailable or the session exceeds limits.
+  # text-only   Silently fall back to text I/O. Recommended for production.
+  # queue       Buffer the voice request and retry when the API recovers.
+  # error       Raise an error and surface it to the caller.
+  fallback: "text-only"
+
+  # ── Safety ────────────────────────────────────────────────────────────────
+  safety:
+    # Strip profanity from TTS output. Does not affect STT transcription.
+    profanity_filter: true
+
+    # Hard cap on a single voice session's duration.
+    # The session ends (and control returns to text) after this many seconds.
+    max_duration_seconds: 300

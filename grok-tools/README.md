@@ -1,3 +1,9 @@
+---
+title: grok-tools
+description: Typed tool registry for agents & workflows
+image: /docs/posters/grok-tools.png
+---
+
 # grok-tools.yaml
 
 **What problem it solves**  

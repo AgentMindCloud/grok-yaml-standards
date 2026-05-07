@@ -1,0 +1,57 @@
+# grok-agent/examples/trend-to-thread-bot.yaml
+# Reference config: X content-generation agent that turns trends into threads.
+# Copy into your repo as .grok/grok-agent.yaml to use.
+version: "1.3.0"
+author: "@AgentMindCloud"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.3+"
+
+agents:
+  TrendToThreadBot:
+    description: "Monitors X trends, drafts viral threads, and schedules them through the author's own account"
+    tools:
+      - analyze_engagement
+      - post_thread
+      - reply_to_mentions
+      - web_search
+    memory: "session_only"
+    max_turns_per_session: 75
+    personality: "creative"
+    system_prompt: "You are a social media strategist. Spot emerging X trends, draft punchy 5–8 post threads in the author's voice, and never post without a review hook."
+    permissions:
+      - read
+      - network
+      - publish
+    rate_limit:
+      requests_per_minute: 30
+      requests_per_day: 500
+    hub_card:
+      publish: true
+      registry_name: "Trend-to-Thread Bot"
+      model: "grok-3-fast"
+      github: "https://github.com/AgentMindCloud/trend-to-thread-bot"
+      tags:
+        - content-generation
+        - x-native
+        - trends
+        - social-media
+        - viral
+      safety_profile: "balanced"
+      permission_scopes:
+        - read
+        - network
+        - publish
+      install_command: "npm install -g @agentmindcloud/trend-to-thread-bot"
+      deploy_command: "grok deploy TrendToThreadBot --target=production"
+      stats:
+        downloads: 8742
+        stars: 612
+        forks: 78
+      x_native_features:
+        - thread_post
+        - reply
+        - search
+        - media_analysis
+      leaderboard_score: 74.2

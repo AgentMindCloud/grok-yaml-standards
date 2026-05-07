@@ -1,0 +1,53 @@
+# .grok/brand-tokens.yaml
+# Locked brand tokens for grok-yaml-standards.
+# Referenced by README.md hero banner. Bump `version` when any value changes.
+
+version: "1.0.0"
+author: "@JanSol0s"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.2+"
+
+colors:
+  grok_black:   "#0D0D0D"   # X/Grok primary dark
+  grok_white:   "#FFFFFF"   # Primary light
+  grok_accent:  "#1DA1F2"   # Twitter/X blue — community accent
+  grok_gold:    "#F5C518"   # Highlight + badge accent
+  grok_mute:    "#8899A6"   # Secondary text on dark
+  grok_surface: "#15202B"   # Card/surface on dark
+
+typography:
+  heading: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+  body:    "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+  code:    "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace"
+
+spacing:
+  radius_sm: "4px"
+  radius_md: "8px"
+  radius_lg: "16px"
+
+# SVG hero logo — inline, no binary asset required.
+# Width 640, height 120. Uses grok_black background, grok_accent + grok_gold accents.
+logo:
+  svg_data_uri: >-
+    data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'
+    viewBox='0 0 640 120' role='img' aria-label='grok-yaml-standards'>
+    <rect width='640' height='120' fill='%230D0D0D' rx='16'/>
+    <text x='40' y='72' font-family='Inter, system-ui, sans-serif'
+    font-size='40' font-weight='800' fill='%23FFFFFF'>grok-yaml-</text>
+    <text x='295' y='72' font-family='Inter, system-ui, sans-serif'
+    font-size='40' font-weight='800' fill='%231DA1F2'>standards</text>
+    <text x='40' y='100' font-family='Inter, system-ui, sans-serif'
+    font-size='14' font-weight='500' fill='%238899A6'>12 magic YAML standards for Grok on X</text>
+    <circle cx='600' cy='60' r='16' fill='%23F5C518'/>
+    </svg>
+
+usage_policy:
+  attribution_required: true
+  modifications_allowed: true
+  commercial_use: true
+  notes: >
+    Tokens are community-maintained. Downstream projects may reuse the palette
+    for Grok-related tooling. For any xAI-official rebrand, defer to xAI's
+    trademark policy.

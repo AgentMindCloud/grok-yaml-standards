@@ -27,9 +27,10 @@
 | **Security Level**       | Medium | High | High | Low | High | Critical |
 
 **All files** follow the same modern YAML structure:
+
 ```yaml
 version: "2.0.0"
-author: "@yourhandle"
+author: "@AgentMindCloud"
 compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+", "grok-yaml-standards@2.0+"]
 ...
 ```

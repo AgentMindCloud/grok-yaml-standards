@@ -1,0 +1,46 @@
+# Advanced patterns: parallel agents, model overrides, memory tiers
+# FastClassifier + DeepResearcher + Orchestrator show how to split
+# tasks across agents with different speed/quality trade-offs.
+# Wire them together in grok-workflow.advanced.yaml.
+version: "1.2.0"
+author: "@dev_example"
+compatibility: ["grok@2026.4+"]
+
+agents:
+  FastClassifier:
+    description: "Lightweight agent for quick tweet classification. Uses fastest model for sub-second latency."
+    model_override: "grok-4-fast"
+    tools: ["search_x", "analyze_engagement"]
+    memory: "session_only"
+    max_turns_per_session: 5
+    safety_profile: "strict"
+    rate_limit:
+      requests_per_minute: 60
+      requests_per_day: 2000
+
+  DeepResearcher:
+    description: "Heavy reasoning agent for multi-source research. Uses grok-4-reasoning for complex analysis tasks."
+    model_override: "grok-4-reasoning"
+    tools: ["web_search", "fetch_url", "search_x", "read_file", "save_memory"]
+    memory: "long_term"
+    max_turns_per_session: 100
+    auto_save_state: true
+    safety_profile: "research"
+    rate_limit:
+      requests_per_minute: 10
+      requests_per_day: 500
+
+  # Orchestrator invokes FastClassifier and DeepResearcher via workflow
+  # steps (see grok-workflow.advanced.yaml). Agent-to-agent delegation
+  # is expressed as workflow step dependencies, not a delegates_to field.
+  Orchestrator:
+    description: "Compiles outputs from FastClassifier and DeepResearcher into a final summary for user approval."
+    model_override: "grok-4"
+    tools: ["recall_memory", "summarize_changes"]
+    memory: "long_term"
+    max_turns_per_session: 50
+    auto_save_state: true
+    safety_profile: "strict"
+    rate_limit:
+      requests_per_minute: 20
+      requests_per_day: 1000

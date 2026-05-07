@@ -68,6 +68,167 @@
             "description": "Post an X notification when the workflow finishes (success or failure).",
             "default": false
           },
+          "orchestration": {
+            "type": "object",
+            "description": "Optional multi-agent orchestration metadata. When present, the workflow coordinates one or more sub-agents under a declared execution mode.",
+            "required": ["mode"],
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "type": "string",
+                "description": "Execution topology for the orchestrated agents.",
+                "enum": ["hybrid", "graph", "crew", "debate_swarm"]
+              },
+              "agents": {
+                "type": "array",
+                "description": "Sub-agents participating in this orchestration. Each entry describes a named role and the tools it may invoke.",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["name", "role"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Identifier used to reference this agent in graph edges and step outputs.",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Human-readable description of the agent's responsibility in this orchestration.",
+                      "minLength": 5,
+                      "maxLength": 200
+                    },
+                    "tools": {
+                      "type": "array",
+                      "description": "Tool identifiers this agent is permitted to invoke. Must match entries in grok-tools.yaml.",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "read_file",
+                          "write_file",
+                          "run_command",
+                          "search_code",
+                          "create_pr",
+                          "post_thread",
+                          "analyze_engagement",
+                          "reply_to_mentions",
+                          "web_search",
+                          "web_fetch",
+                          "run_tests",
+                          "deploy",
+                          "send_notification",
+                          "read_database",
+                          "write_database",
+                          "call_api",
+                          "list_files",
+                          "delete_file",
+                          "create_branch",
+                          "merge_pr"
+                        ]
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of parallel instances of this agent to spawn. Useful for crew and debate_swarm modes.",
+                      "minimum": 1,
+                      "maximum": 100,
+                      "default": 1
+                    }
+                  }
+                }
+              },
+              "graph": {
+                "type": "object",
+                "description": "Directed execution graph. Used when mode is 'graph' or 'hybrid'.",
+                "additionalProperties": false,
+                "properties": {
+                  "edges": {
+                    "type": "array",
+                    "description": "Directed edges between agents, optionally guarded by a condition expression.",
+                    "items": {
+                      "type": "object",
+                      "required": ["from", "to"],
+                      "additionalProperties": false,
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "description": "Source agent name — must match an agent 'name' defined in this orchestration."
+                        },
+                        "to": {
+                          "type": "string",
+                          "description": "Target agent name — must match an agent 'name' defined in this orchestration."
+                        },
+                        "condition": {
+                          "type": "string",
+                          "description": "JavaScript-style boolean expression gating this edge. Edge is traversed only when the expression evaluates to true.",
+                          "maxLength": 500
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "debate_swarm": {
+                "type": "object",
+                "description": "Debate-swarm settings. Used when mode is 'debate_swarm'.",
+                "required": ["rounds", "voter_model"],
+                "additionalProperties": false,
+                "properties": {
+                  "rounds": {
+                    "type": "integer",
+                    "description": "Number of debate rounds before a final vote is tallied.",
+                    "minimum": 1,
+                    "maximum": 20
+                  },
+                  "voter_model": {
+                    "type": "string",
+                    "description": "Model used to adjudicate the final vote across debate participants.",
+                    "enum": ["grok-4", "grok-3", "grok-3-mini"]
+                  },
+                  "quorum": {
+                    "type": "number",
+                    "description": "Fraction of voters that must agree for a motion to pass.",
+                    "minimum": 0.5,
+                    "maximum": 1.0,
+                    "default": 0.66
+                  }
+                }
+              },
+              "memory": {
+                "type": "object",
+                "description": "Shared memory configuration for the orchestrated agents.",
+                "required": ["type"],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Memory backend class used across the orchestration.",
+                    "enum": ["ephemeral", "session", "long_term", "vector"]
+                  },
+                  "persist": {
+                    "type": "boolean",
+                    "description": "Persist memory contents across workflow runs. Only meaningful when type is 'long_term' or 'vector'.",
+                    "default": false
+                  },
+                  "vector_store": {
+                    "type": "string",
+                    "description": "Vector database provider. Required when type is 'vector'.",
+                    "enum": ["pinecone", "weaviate", "chroma", "qdrant", "pgvector"]
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "type": { "const": "vector" }
+                  }
+                },
+                "then": {
+                  "required": ["vector_store"]
+                }
+              }
+            }
+          },
           "steps": {
             "type": "array",
             "description": "Ordered sequence of actions executed top-to-bottom. Steps share a runtime context and can reference previous step outputs.",

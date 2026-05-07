@@ -1,0 +1,53 @@
+# grok-agent/examples/private-ops-agent.yaml
+# Reference config: internal ops agent that opts OUT of GrokHub publishing.
+# Demonstrates hub_card.publish = false as the opt-out pattern.
+# Copy into your repo as .grok/grok-agent.yaml to use.
+version: "1.3.0"
+author: "@AgentMindCloud"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.3+"
+
+agents:
+  PrivateOpsAgent:
+    description: "Internal operations agent that runs deploys and database maintenance for a private org. Never published to any public registry."
+    tools:
+      - read_file
+      - write_file
+      - run_command
+      - read_database
+      - write_database
+      - deploy
+      - send_notification
+    memory: "long_term"
+    max_turns_per_session: 150
+    auto_save_state: true
+    personality: "executive"
+    system_prompt: "You are an internal ops engineer for a private company. Treat every output as confidential. Never post to public channels. Confirm before any destructive action."
+    permissions:
+      - read
+      - write
+      - execute
+      - deploy
+      - admin
+    rate_limit:
+      requests_per_minute: 20
+      requests_per_day: 2000
+    hub_card:
+      publish: false
+      registry_name: "Private Ops Agent"
+      model: "grok-4"
+      github: "https://github.com/AgentMindCloud/private-ops-agent"
+      tags:
+        - internal
+        - ops
+        - private
+      safety_profile: "strict"
+      permission_scopes:
+        - read
+        - write
+        - execute
+        - deploy
+        - admin
+      install_command: "grok install --private @agentmindcloud/private-ops-agent"

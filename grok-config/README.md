@@ -1,3 +1,9 @@
+---
+title: grok-config
+description: Repo-wide model settings & defaults
+image: /docs/posters/grok-config.png
+---
+
 # grok-config.yaml
 
 **What problem it solves**  

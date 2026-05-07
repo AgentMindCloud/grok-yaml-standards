@@ -1,3 +1,9 @@
+---
+title: grok-deploy
+description: Deployment targets, env vars, health checks
+image: /docs/posters/grok-deploy.png
+---
+
 # grok-deploy.yaml
 
 **What problem it solves**  

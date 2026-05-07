@@ -1,0 +1,35 @@
+title: grok-yaml-standards
+description: 12 magic YAML standards for Grok on X — drop-in agents, workflows, prompts, security, deployments, analytics, and more.
+url: https://agentmindcloud.github.io
+baseurl: /grok-yaml-standards
+
+twitter:
+  username: agentmindcloud
+  card: summary_large_image
+
+social:
+  name: AgentMindCloud
+  links:
+    - https://github.com/agentmindcloud
+    - https://x.com/agentmindcloud
+
+plugins:
+  - jekyll-seo-tag
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+      image: /docs/posters/og-default.png
+
+# schemas/ is intentionally NOT excluded — Pages must serve schemas/*.json
+# so the README's VS Code yaml.schemas snippet works as written.
+exclude:
+  - scripts/
+  - tests/
+  - "*.lock"
+  - .github/
+  - node_modules/
+  - .yamllint
+  - CODEOWNERS

@@ -1,3 +1,9 @@
+---
+title: grok-ui
+description: Voice commands, dashboard widgets, shortcuts
+image: /docs/posters/grok-ui.png
+---
+
 # grok-ui.yaml
 
 **What problem it solves**  

@@ -1,0 +1,54 @@
+# grok-workflow/examples/simple-graph-agent.yaml
+# Reference workflow: minimal linear-graph pipeline (3 agents, 2 edges).
+# Demonstrates the smallest useful orchestration.graph configuration.
+# Copy into your repo as .grok/grok-workflow.yaml to use.
+version: "1.3.0"
+author: "@AgentMindCloud"
+compatibility:
+  - "grok-install.yaml@1.0+"
+  - "grok@2026.4+"
+  - "grok-yaml-standards@1.3+"
+
+workflows:
+  SimpleGraphAgent:
+    description: "Minimal linear-graph pipeline: Collector → Writer → Poster. Good starting template for your own graph orchestration."
+    trigger: "@grok run workflow:SimpleGraphAgent"
+    timeout_minutes: 20
+    orchestration:
+      mode: "graph"
+      agents:
+        - name: "Collector"
+          role: "Collects source material from the open web and X"
+          tools:
+            - web_search
+            - web_fetch
+        - name: "Writer"
+          role: "Drafts a short thread from the collected material"
+          tools:
+            - read_file
+            - write_file
+        - name: "Poster"
+          role: "Posts the final thread to X and replies to early mentions"
+          tools:
+            - post_thread
+            - reply_to_mentions
+      graph:
+        edges:
+          - from: "Collector"
+            to: "Writer"
+          - from: "Writer"
+            to: "Poster"
+            condition: "steps.Draft.length >= 3"
+      memory:
+        type: "session"
+        persist: false
+    steps:
+      - name: "Collect"
+        action: "web_search"
+      - name: "Draft"
+        action: "grok-prompts"
+        prompt: "viral_thread"
+      - name: "Post to X"
+        action: "post_thread"
+        template: "viral_thread"
+        condition: "steps.Draft.length >= 3"

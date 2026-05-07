@@ -7,15 +7,20 @@
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](standards-overview.md)  
 [![Launched on X](https://img.shields.io/badge/Launched%20on%20X-000000?logo=x)](https://x.com/JanSol0s/status/2044691252327993364)
 
-**The Central Community Hub for Grok YAML Magic on X**
+<!-- NEON / CYBERPUNK REPO TEMPLATE · GROK-YAML-STANDARDS -->
 
 **Extending the official `grok-install.yaml` standard with 14 magic YAML files** — the definitive open reference library so that **X users, developers, and xAI** can all benefit from frictionless Grok-powered features via simple YAML files in any repo.
 
----
+<h1 align="center">⚡ grok-yaml-standards</h1>
 
-## Why This Repo Exists
+<p align="center">
+  <b>The official community reference library extending <code>grok-install.yaml</code>.</b><br/>
+  Twelve YAML standards. Zero setup. Trigger Grok-powered features in any repo via <code>@grok</code>.
+</p>
 
-`grok-install.yaml` showed the world how a single YAML file can turn any GitHub repo into a Grok-native experience.
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Space+Grotesk&weight=700&size=22&pause=1000&color=00E5FF&center=true&vCenter=true&width=900&lines=12+Magic+YAML+Standards;Zero-Setup+Grok+Features+on+X;JSON+Schema+Draft+7+Validated;Forward-Compatible+with+grok-install.yaml" alt="typing" />
+</p>
 
 **grok-yaml-standards v2.0.0** ships rich templates, a ready-to-drop `.grok/` folder, GitHub release automation, comprehensive JSON Schema validation, issue templates, two brand-new specs (`grok-swarm.yaml` and `grok-voice.yaml`), and the ecosystem foundation files (`LICENSE`, `DISCLAIMER.md`, `CHANGELOG.md`, `.github/FUNDING.yml`) shared across every repo in the GrokInstall family.
 
@@ -23,18 +28,65 @@ See the [CHANGELOG](CHANGELOG.md) for the full v2.0.0 release notes.
 
 ---
 
-## How to Use Today (Zero Setup)
+## ✦ What This Is
 
-1. Copy any file from the ready `.grok/` sample folder
-2. Place it in your repo at `.grok/grok-xxx.yaml`
-3. Add a magic trigger comment in any issue, PR, or README
-4. Tag `@grok` — Grok instantly activates the feature
+`grok-install.yaml` showed the world how a single YAML file can turn any GitHub repo into a Grok-native experience. **grok-yaml-standards** extends that with **12 drop-in YAML standards** — instant agents, workflows, prompts, security, deployments, analytics, and more — all triggered via `@grok` comments in any issue, PR, or README.
 
----
+**v1.3.0** adds an optional **GrokHub Card** for registry publishing, **GrokForge Orchestration** on workflows (hybrid, graph, crew, debate_swarm modes), and 7 drop-in reference configs. Count stays at 12.
+
+## ✦ The 12 Standards — At a Glance
+
+<p align="center">
+  <img src="https://img.shields.io/badge/grok--config-00E5FF?style=for-the-badge&logoColor=001018&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--prompts-7C3AED?style=for-the-badge&logoColor=FFFFFF&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--agent-FF4FD8?style=for-the-badge&logoColor=FFFFFF&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--workflow-00D5FF?style=for-the-badge&logoColor=001018&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--update-9D4EDD?style=for-the-badge&logoColor=FFFFFF&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--test-5EF2FF?style=for-the-badge&logoColor=001018&labelColor=0A0D14" />
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/grok--docs-C026D3?style=for-the-badge&logoColor=FFFFFF&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--security-38BDF8?style=for-the-badge&logoColor=001018&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--tools%20(new)-00E5FF?style=for-the-badge&logoColor=001018&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--deploy%20(new)-7C3AED?style=for-the-badge&logoColor=FFFFFF&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--analytics%20(new)-FF4FD8?style=for-the-badge&logoColor=FFFFFF&labelColor=0A0D14" />
+  <img src="https://img.shields.io/badge/grok--ui%20(new)-00D5FF?style=for-the-badge&logoColor=001018&labelColor=0A0D14" />
+</p>
+
+## ✦ Why You'd Use It
+
+<table>
+  <tr>
+    <td width="33%">
+      <h3>⚡ Zero Setup</h3>
+      <p>Copy the <code>.grok/</code> folder, drop it in any repo, tag <code>@grok</code>. That's the entire install.</p>
+    </td>
+    <td width="33%">
+      <h3>🛡️ Schema Validated</h3>
+      <p>Every standard ships with JSON Schema Draft 7. CI runs <code>yamllint</code> + <code>ajv-cli</code> on every PR.</p>
+    </td>
+    <td width="33%">
+      <h3>🔗 Forward Compatible</h3>
+      <p>All 12 standards work with <code>grok-install.yaml@1.0+</code> and <code>grok@2026.4+</code>.</p>
+    </td>
+  </tr>
+</table>
+
+## ✦ 30 Seconds to First Trigger
+
+```bash
+git clone https://github.com/agentmindcloud/grok-yaml-standards.git
+cd grok-yaml-standards
+cp -r .grok/ /your/repo/.grok/          # drop in any repo
+# Then in any issue, PR, or README, add a magic comment:
+# @grok spawn agent:ResearchBot
+# @grok run workflow:DailyDigest
+# @grok security scan
+```
 
 ## The 14 Magic YAML Standards
 
-### Core Standards
+## ✦ Core Standards
 
 | YAML File | Primary Trigger | What It Unlocks | Benefit |
 |-----------|----------------|-----------------|---------|
@@ -47,7 +99,7 @@ See the [CHANGELOG](CHANGELOG.md) for the full v2.0.0 release notes.
 | [`grok-docs.yaml`](grok-docs/) | `@grok docs` | Auto-generated documentation | Clarity |
 | [`grok-security.yaml`](grok-security/) | `@grok security scan` | Real-time security & compliance | Safety |
 
-### Spec Extensions
+## ✦ Spec Extensions
 
 | YAML File | Primary Trigger | What It Unlocks | Benefit |
 |-----------|----------------|-----------------|---------|
@@ -58,20 +110,11 @@ See the [CHANGELOG](CHANGELOG.md) for the full v2.0.0 release notes.
 | [`grok-swarm.yaml`](grok-swarm/) *(new in v2.0)* | `@grok spawn swarm:<id>` | Multi-agent swarms with coordinator, consensus, fallback | Scale |
 | [`grok-voice.yaml`](grok-voice/) *(new in v2.0)* | `@grok voice start` | Full STT → intent → agent → TTS voice pipelines | Accessibility |
 
----
+> Count authority: [`version-reconciliation.md`](version-reconciliation.md). If you see "14 standards" anywhere in the wild, it is incorrect as of v1.3.0.
 
-## Quick Start
+## ✦ JSON Schema Validation
 
-```bash
-git clone https://github.com/agentmindcloud/grok-yaml-standards.git
-cd grok-yaml-standards
-# Drop the ready .grok/ folder into your repo and start triggering today!
-cp -r .grok/ /your/repo/.grok/
-```
-
----
-
-## JSON Schema Validation
+Every standard ships with a full JSON Schema in [`/schemas/`](schemas/). Target: **Draft 7**. Draft 2020-12 migration planned for v1.4.
 
 Every standard ships with a full JSON Schema in [`/schemas/`](schemas/). Validators are available for all 14 specs:
 
@@ -92,7 +135,9 @@ Every standard ships with a full JSON Schema in [`/schemas/`](schemas/). Validat
 | [`schemas/grok-swarm.json`](schemas/grok-swarm.json) | Swarm members, coordinator, consensus, fallback |
 | [`schemas/grok-voice.json`](schemas/grok-voice.json) | Voice pipeline, input/output, latency, privacy |
 
-Add this to your VS Code `settings.json` for live validation:
+</details>
+
+Add this to VS Code `settings.json` for live validation:
 
 ```json
 {
@@ -106,11 +151,21 @@ Add this to your VS Code `settings.json` for live validation:
 }
 ```
 
----
+Run the same validation locally:
 
-## Compatibility Matrix
+```bash
+npx ajv validate --spec=draft7 --all-errors --strict=false \
+  -s schemas/grok-agent.json -d .grok/grok-agent.yaml
+```
 
-Every file in this library is forward-compatible with the specs below. The matrix shows the minimum version required for each standard.
+## ✦ Validation & CI
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| [`validate-schemas.yml`](.github/workflows/validate-schemas.yml) | `pull_request`, `push` to `main` | `yamllint` (config: [`.yamllint`](.yamllint)) against `.grok/` + every `grok-*/example.yaml` + every `grok-*/examples/*.yaml`, then `ajv-cli` Draft 7 against each of the 12 schemas, plus a smoke check on `$id`, `title`, `description`, `$schema` |
+| [`release.yml`](.github/workflows/release.yml) | `push` of a `v*` tag | Publishes a GitHub Release via `softprops/action-gh-release@v2` with auto-generated notes |
+
+## ✦ Compatibility Matrix
 
 | Standard | grok-install.yaml | grok | grok-yaml-standards |
 |----------|------------------|------|---------------------|

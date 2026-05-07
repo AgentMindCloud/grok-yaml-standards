@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/agentmindcloud/grok-yaml-standards/main/schemas/grok-swarm.schema.json",
+  "title": "grok-swarm v2.0.0",
+  "description": "Schema for grok-swarm.yaml — Grok 4.20 multi-agent swarm orchestration spec.",
+  "type": "object",
+  "required": ["version", "author", "compatibility", "swarm"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Spec version. Must be 2.0.0 or higher for swarm support.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "author": {
+      "type": "string",
+      "description": "GitHub handle of the spec author, prefixed with @.",
+      "pattern": "^@[A-Za-z0-9_-]+$"
+    },
+    "compatibility": {
+      "type": "array",
+      "description": "Runtime and standards version requirements.",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "swarm": {
+      "type": "object",
+      "description": "Root configuration block for the agent swarm.",
+      "required": ["mode", "agents"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "description": "Execution mode. realtime-multi-agent for low-latency streaming; high-effort-16 for deep research with up to 16 agents; single for single-agent fallback.",
+          "enum": ["realtime-multi-agent", "high-effort-16", "single"],
+          "default": "single"
+        },
+        "agent_count": {
+          "type": "integer",
+          "description": "Number of agents to instantiate. Ignored in high-effort-16 mode.",
+          "minimum": 1,
+          "maximum": 16,
+          "default": 1
+        },
+        "agents": {
+          "type": "array",
+          "description": "List of agent slot definitions for the swarm.",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "required": ["role", "model"],
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "type": "string",
+                "description": "Functional role of this agent within the swarm.",
+                "enum": ["coordinator", "researcher", "logic", "creative", "critic", "moderator", "custom"]
+              },
+              "model": {
+                "type": "string",
+                "description": "Grok 4.20 model variant to use for this agent slot.",
+                "enum": [
+                  "grok-4.20",
+                  "grok-4.20-multi-agent",
+                  "grok-4.20-fast",
+                  "grok-voice-stt-latest",
+                  "grok-voice-tts-natural"
+                ]
+              },
+              "tools": {
+                "type": "array",
+                "description": "Tools available to this agent. Constrained to the swarm tool set.",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "web_search",
+                    "x_search",
+                    "code_execution",
+                    "image_generation",
+                    "voice_synthesis"
+                  ]
+                }
+              },
+              "prompt_ref": {
+                "type": "string",
+                "description": "Key of a prompt in grok-prompts.yaml to use as the system prompt. Mutually exclusive with system_prompt.",
+                "pattern": "^[a-z_][a-z0-9_]*$"
+              },
+              "system_prompt": {
+                "type": "string",
+                "description": "Inline system prompt for this agent. Mutually exclusive with prompt_ref.",
+                "minLength": 10,
+                "maxLength": 4000
+              }
+            }
+          }
+        },
+        "state": {
+          "type": "object",
+          "description": "Controls how inter-agent shared state is stored.",
+          "additionalProperties": false,
+          "properties": {
+            "encrypted": {
+              "type": "boolean",
+              "description": "Whether shared state is encrypted at rest. Should always be true in production.",
+              "default": true
+            },
+            "persistence": {
+              "type": "string",
+              "description": "Lifetime of the shared state store. session-only clears on swarm completion; long-term persists to the repo memory store.",
+              "enum": ["session-only", "long-term", "none"],
+              "default": "session-only"
+            }
+          }
+        },
+        "orchestration": {
+          "type": "object",
+          "description": "Timing, concurrency, and error-recovery settings for the swarm run.",
+          "additionalProperties": false,
+          "properties": {
+            "timeout_seconds": {
+              "type": "integer",
+              "description": "Hard wall-clock timeout for the entire swarm run in seconds.",
+              "minimum": 1,
+              "maximum": 3600,
+              "default": 300
+            },
+            "max_parallel_calls": {
+              "type": "integer",
+              "description": "Maximum number of agent calls that may execute concurrently.",
+              "minimum": 1,
+              "maximum": 16,
+              "default": 4
+            },
+            "retry_policy": {
+              "type": "object",
+              "description": "Retry behaviour applied to individual failing agent calls.",
+              "additionalProperties": false,
+              "properties": {
+                "max_attempts": {
+                  "type": "integer",
+                  "description": "Maximum total attempts per agent call (including the first).",
+                  "minimum": 1,
+                  "maximum": 10,
+                  "default": 3
+                },
+                "backoff": {
+                  "type": "string",
+                  "description": "Delay strategy between retry attempts.",
+                  "enum": ["none", "linear", "exponential"],
+                  "default": "exponential"
+                },
+                "delay_seconds": {
+                  "type": "integer",
+                  "description": "Base delay in seconds for linear/exponential backoff.",
+                  "minimum": 1,
+                  "maximum": 60,
+                  "default": 2
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "version": "2.0.0",
+      "author": "@dev_example",
+      "compatibility": ["grok@4.20+", "grok-yaml-standards@2.0+"],
+      "swarm": {
+        "mode": "realtime-multi-agent",
+        "agent_count": 2,
+        "agents": [
+          {
+            "role": "coordinator",
+            "model": "grok-4.20-multi-agent",
+            "tools": ["web_search"]
+          },
+          {
+            "role": "critic",
+            "model": "grok-4.20-fast",
+            "system_prompt": "Review the coordinator output and score accuracy 1-10."
+          }
+        ],
+        "state": {
+          "encrypted": true,
+          "persistence": "session-only"
+        },
+        "orchestration": {
+          "timeout_seconds": 120,
+          "max_parallel_calls": 2,
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff": "exponential",
+            "delay_seconds": 2
+          }
+        }
+      }
+    }
+  ]
+}
