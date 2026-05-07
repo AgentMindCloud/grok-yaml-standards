@@ -1,8 +1,8 @@
 # standards-overview.md
 
-## Comparison of All 12 Grok YAML Standards
+## Comparison of All 14 Grok YAML Standards
 
-### Core Standards (8)
+### Core standards
 
 | Feature                  | grok-config | grok-prompts | grok-agent | grok-workflow | grok-update | grok-test | grok-docs | grok-security |
 |--------------------------|-------------|--------------|------------|---------------|-------------|-----------|-----------|---------------|
@@ -14,30 +14,29 @@
 | **Forward-compatible**   | Yes         | Yes          | Yes        | Yes           | Yes         | Yes       | Yes       | Yes           |
 | **Security Level**       | Medium      | Low          | High       | High          | Medium      | Medium    | Low       | Critical      |
 
-### Spec Extensions (4, added in v1.2.0)
+### Spec extensions
 
-| Feature                  | grok-tools | grok-deploy | grok-analytics | grok-ui |
-|--------------------------|------------|-------------|----------------|---------|
-| **Primary Use**          | Typed tool registry | Deployment targets | Opt-in telemetry | Voice + UI surface |
-| **Versioned**            | Yes        | Yes         | Yes            | Yes     |
-| **X Trigger Ready**      | Yes        | Yes         | Yes            | Yes     |
-| **Stateful**             | No         | Partial     | Yes            | No      |
-| **Shareable**            | Yes        | Yes         | Yes            | Yes     |
-| **Forward-compatible**   | Yes        | Yes         | Yes            | Yes     |
-| **Security Level**       | High       | Critical    | High (PII)     | Medium  |
+| Feature                  | grok-tools | grok-deploy | grok-analytics | grok-ui | grok-swarm | grok-voice |
+|--------------------------|------------|-------------|----------------|---------|------------|------------|
+| **Primary Use**          | Tool registry | Deployments | Telemetry | UI & shortcuts | Multi-agent coordination | Voice pipelines |
+| **Versioned**            | Yes | Yes | Yes | Yes | Yes | Yes |
+| **X Trigger Ready**      | Yes | Yes | Yes | Yes | Yes | Yes |
+| **Stateful**             | No | Yes | Yes | No | Yes | Yes |
+| **Shareable**            | High | Yes | Yes | Yes | High | High |
+| **Forward-compatible**   | Yes | Yes | Yes | Yes | Yes | Yes |
+| **Security Level**       | Medium | High | High | Low | High | Critical |
 
 **All files** follow the same modern YAML structure:
 
 ```yaml
-version: "1.3.0"
-author: "@yourhandle"
-compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+"]
-# …
+version: "2.0.0"
+author: "@AgentMindCloud"
+compatibility: ["grok-install.yaml@1.0+", "grok@2026.4+", "grok-yaml-standards@2.0+"]
+...
 ```
 
-### JSON Schema Validation (introduced in v1.2.0)
-
-All 12 magic files have official JSON Schemas in the [`schemas/`](schemas/) folder.
+### JSON Schema Validation
+All 14 magic files have official JSON Schemas in the `/schemas/` folder.
 This enables automatic validation in GitHub, VS Code, and any modern editor.
 
 **Benefits:**
@@ -45,6 +44,7 @@ This enables automatic validation in GitHub, VS Code, and any modern editor.
 - Auto-complete for contributors
 - Future-proof for xAI native support
 
-> Schemas currently target JSON Schema **Draft 7**. Draft 2020-12 migration is on the v1.4 roadmap once all downstream consumers confirm compatibility.
-
-See [`version-reconciliation.md`](version-reconciliation.md) for the authoritative list and the one-line PR text to correct any downstream repo that claims a different count.
+### New in v2.0.0
+- `grok-swarm.yaml` — multi-agent coordination with coordinator, consensus, and fallback
+- `grok-voice.yaml` — full STT → intent → agent → TTS pipeline with latency budget and privacy controls
+- Ecosystem foundation files: `LICENSE`, `DISCLAIMER.md`, `CHANGELOG.md`, `.github/FUNDING.yml`
